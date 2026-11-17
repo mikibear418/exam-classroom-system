@@ -93,6 +93,10 @@ body{background:radial-gradient(circle at 0 0,#fdf0fd 0,transparent 34%),radial-
 </style>
 <style>
 /* V1.9 classroom-oriented layout */
+/* Keep each student's complete name on one line in the board and preview. */
+.seat.student strong{display:block;width:100%;max-width:100%;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal;word-break:keep-all;font-size:clamp(11px,1.1vw,18px);line-height:1.25}
+.seat.student{min-width:0;overflow:hidden}
+
 #cardExam .exam-subject{text-align:center;align-self:stretch}
 #paneSchedule .admin-table th:nth-child(3),#paneSchedule .admin-table td:nth-child(3){text-align:center}
 #paneSchedule .admin-table td:nth-child(3) input{text-align:center;font-weight:800;font-size:1.12em}
