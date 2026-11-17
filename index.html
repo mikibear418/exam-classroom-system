@@ -106,6 +106,15 @@ body{background:radial-gradient(circle at 0 0,#fdf0fd 0,transparent 34%),radial-
 .seat.student strong{font-size:clamp(14px,1.5vw,22px)}
 .seat.student .student-status{font-size:11px}
 @media(max-width:750px){.seat.student strong{font-size:13px}}
+
+/* V1.9.2: prevent seat compression in electronic whiteboard layouts */
+#cardSeat .seat-wrap{overflow-x:auto;overflow-y:visible;overscroll-behavior-x:contain;scrollbar-gutter:stable}
+#seatGrid,.seat-mini{width:max-content;min-width:100%;max-width:none;margin-left:auto;margin-right:auto;gap:8px}
+#seatGrid .seat.student,.seat-mini .seat.student{box-sizing:border-box;min-width:100px;padding:7px 5px;min-height:76px;gap:3px;flex-shrink:0}
+#seatGrid .seat.student strong,.seat-mini .seat.student strong{display:block;width:100%;min-width:0;max-width:100%;font-size:clamp(15px,1.3vw,19px);line-height:1.25;white-space:nowrap;word-break:keep-all;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+#seatGrid .student-class,.seat-mini .student-class,#seatGrid .student-status,.seat-mini .student-status{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#seatMiniPreview{overflow:visible}
+#paneSeat{min-width:0;overflow-x:auto}
 </style></head>
 <body>
 <div class="shell">
@@ -508,7 +517,7 @@ function runSeatPlan(){const room=$('seatRoomName').value.trim()||selectedRoom;i
  toast(message);$('planWarnings').style.display=solved.unassigned.length?'block':'none';
 }
 function paintSeatCells(container,room,mini=false){const cfg=rowCfg(room),cells=seatCells(cfg),plan=planFor(room),roster=roomRoster(room),reverse=new Map(roster.map(s=>[s.id,s]));
- container.style.gridTemplateColumns=`repeat(${cells.cols},minmax(0,1fr))`;
+ container.style.gridTemplateColumns=`repeat(${cells.cols},minmax(100px,1fr))`;
  container.innerHTML=Array.from({length:cells.rows*cells.cols},(_,i)=>{
   const pos=`${Math.floor(i/cells.cols)},${i%cells.cols}`,num=cells.nums.get(pos),s=reverse.get(plan[pos]);
   if(s){const status=getStatus(s);return `<div class="seat student" draggable="true" role="button" tabindex="0" data-pos="${pos}" data-status="${status}" title="${esc(s.className)} ${esc(s.number)} ${esc(s.name)}：${statusLabels[status]}。點擊切換出缺席，拖曳交換座位"><strong>${esc(s.name)}</strong><span class="student-class">${esc(s.className)} ${esc(s.number)}</span><span class="student-status">${statusLabels[status]}</span></div>`}
