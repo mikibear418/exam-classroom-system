@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>段考監考教室系統 V1.9｜電子白板</title>
+<style>
+:root{--bg:#081727;--panel:#12263b;--panel2:#19334b;--edge:#2b4560;--muted:#a9bfd0;--text:#eff7ff;--mint:#73e0c8;--gold:#ffda8b;--blue:#6eb4ff;--danger:#ff958a;--shadow:0 18px 48px #030b1670}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed}.shell{max-width:1800px;margin:auto;padding:20px 28px 32px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:12px}.logo{display:grid;place-items:center;width:46px;height:46px;background:linear-gradient(135deg,#268888,#346ebc);border:1px solid #80e2d3;border-radius:14px;font-size:23px}.brand b{font-size:20px;letter-spacing:1px}.brand small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn{border:1px solid var(--edge);background:#1b3249;color:var(--text);border-radius:11px;padding:10px 15px;font-weight:650}.btn:hover{filter:brightness(1.16)}.btn.active,.btn.primary{background:#2a7f87;border-color:#61c7c3;color:white}.btn.ghost{background:transparent}.btn.red{border-color:#92504d;color:#ffc5bb}.status{font-size:12px;color:#a3f4cd;border:1px solid #38685d;background:#143c38;border-radius:99px;padding:6px 11px}.board-head{background:linear-gradient(115deg,#1c3853,#102d47 65%,#17494a);border:1px solid var(--edge);border-radius:22px;padding:24px 30px;display:flex;justify-content:space-between;align-items:center;gap:16px;box-shadow:var(--shadow)}.eyebrow{font-size:13px;color:var(--mint);font-weight:750;letter-spacing:2px}.board-head h1{font-size:clamp(26px,3.1vw,48px);margin:6px 0 10px;letter-spacing:2px}.subtitle{color:#d1e5f3;font-size:clamp(14px,1.35vw,20px)}.head-right{text-align:right}.clock{font-variant-numeric:tabular-nums;font-weight:850;line-height:1;font-size:clamp(35px,4.2vw,69px)}.date-line{color:var(--muted);margin-top:12px}.selector-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0}.selector-row select,.selector-row input{background:#153048;color:white;border:1px solid var(--edge);border-radius:9px;padding:10px 12px}.selector-row label{color:#c9dce7;font-weight:700}.modehint{margin-left:auto;font-size:13px;color:var(--muted)}.board-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(340px,1fr);gap:17px}.panel{background:var(--panel);border:1px solid var(--edge);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 23px;border-bottom:1px solid var(--edge);gap:8px}.panel-head h2{font-size:20px;margin:0}.panel-head small{color:var(--muted)}.main-exam{padding:23px;min-height:266px;display:flex;flex-direction:column;justify-content:center}.exam-chip{display:inline-flex;align-self:flex-start;gap:8px;align-items:center;color:#061f29;background:var(--mint);border-radius:20px;padding:6px 13px;font-weight:850;font-size:13px}.exam-subject{font-size:clamp(54px,7vw,110px);line-height:1.2;font-weight:900;letter-spacing:5px;margin:15px 0}.exam-time{font-size:clamp(23px,2.2vw,34px);color:#d6e7ef;font-weight:750}.exam-extra{color:var(--muted);margin-top:12px}.countdown{background:#071f30;border:1px solid #244c5c;border-radius:15px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}.countdown .num{font-size:clamp(28px,3.3vw,53px);font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}.countdown .label{color:#c3dbeb;font-weight:700}.schedule{padding:8px 15px 17px}.exam-row{display:grid;grid-template-columns:116px 1fr auto;align-items:center;gap:12px;padding:15px 10px;border-bottom:1px solid #28425b}.exam-row:last-child{border-bottom:0}.exam-row.current{background:#153f48;border-radius:11px;border-color:transparent}.exam-row .time{color:#bad2e5;font-variant-numeric:tabular-nums;font-size:15px}.exam-row .subject{font-size:20px;font-weight:800}.exam-row .pill{font-size:12px;border:1px solid #466376;border-radius:99px;padding:5px 9px;color:#c8dcec;white-space:nowrap}.exam-row.current .pill{color:#8af4db;border-color:#5ba9a0}.side-stack{display:grid;grid-template-rows:auto auto;gap:17px;align-content:start}.seat-wrap{padding:18px 20px 22px}.seat-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:10px}.teacher{border:1px dashed #628da6;background:#1d3a50;border-radius:8px;text-align:center;padding:7px;color:#dceaf2;margin:0 auto 16px;width:55%;font-weight:700}.seats{display:grid;gap:8px;margin:auto;max-width:490px}.seat{aspect-ratio:1.26;border:1px solid #416784;background:#1a4057;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:clamp(13px,1.4vw,22px);font-weight:850}.seat i{font-style:normal;font-weight:400;font-size:10px;color:#9fc4d7}.seat.empty{background:transparent;border:1px dashed #38536a;color:#6f8aa0}.notice-list{padding:8px 21px 19px}.notice{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid #29445b;line-height:1.55;font-size:17px}.notice:last-child{border-bottom:0}.notice .bullet{color:var(--gold);font-weight:900}.foot{color:#8eabbf;text-align:center;font-size:12px;margin-top:17px}.hidden{display:none!important}.admin-layout{display:grid;grid-template-columns:220px 1fr;gap:18px}.admin-tabs{display:grid;gap:8px;align-content:start}.admin-tabs button{text-align:left}.admin-content{padding:25px;min-height:610px}.admin-content h2{margin:0 0 7px;font-size:27px}.admin-content p.help{color:var(--muted);margin:0 0 21px;line-height:1.7}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:13px 0}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:14px;font-weight:750;color:#c7dce9}.field input,.field select,.field textarea{width:100%;background:#0e2236;color:white;border:1px solid #426079;border-radius:9px;padding:11px}.field textarea{min-height:125px;resize:vertical}.wide{grid-column:1/-1}.actions{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0}.admin-table{width:100%;border-collapse:collapse;margin-top:12px}.admin-table th,.admin-table td{text-align:left;padding:12px 9px;border-bottom:1px solid #2d4961}.admin-table th{color:#a9c6d8;font-size:13px}.admin-table td{font-size:15px}.admin-table td input{width:100%;min-width:82px;padding:8px;background:#10263c;border:1px solid #3b5e77;border-radius:7px;color:white}.admin-table td .btn{padding:6px 10px;font-size:12px}.note{background:#0b2940;border:1px solid #315675;color:#c3deef;border-radius:12px;padding:13px 16px;line-height:1.65;margin:16px 0}.file-zone{border:2px dashed #4e7e99;border-radius:16px;padding:24px;text-align:center;background:#102c42}.file-zone input{max-width:100%;margin:12px 0}.preview-wrap{max-height:520px;overflow:auto}.tag{font-size:12px;color:var(--mint)}.toast{position:fixed;bottom:20px;right:20px;background:#1e605b;color:white;box-shadow:var(--shadow);padding:14px 20px;border-radius:12px;z-index:30;display:none}.toast.show{display:block}.visually-hidden{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden}.empty-state{padding:24px;color:#a7c0d1;text-align:center}.top-alert{display:none;background:#564322;border:1px solid #98753e;border-radius:10px;padding:10px 14px;margin-bottom:15px;color:#ffdfa1}.top-alert.show{display:block}.mini{font-size:12px;color:var(--muted)}@media(max-width:1050px){.board-grid{grid-template-columns:1fr}.side-stack{grid-template-columns:1fr 1fr;grid-template-rows:auto}.admin-layout{grid-template-columns:1fr}.admin-tabs{display:flex;overflow:auto}.fields{grid-template-columns:1fr 1fr}}@media(max-width:650px){.shell{padding:12px}.topbar,.board-head{flex-wrap:wrap}.head-right{text-align:left}.board-head{padding:18px}.clock{font-size:38px}.side-stack{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.admin-content{padding:16px}.exam-subject{font-size:54px}.exam-row{grid-template-columns:99px 1fr auto}.modehint{margin-left:0}}
+body.fullboard .shell{max-width:none;padding:12px 24px}body.fullboard .topbar,body.fullboard .foot{display:none}body.fullboard .board-head{margin-top:6px}body.fullboard .main-exam{min-height:350px}body.fullboard .notice{font-size:21px}body.fullboard .exam-row{padding-top:20px;padding-bottom:20px}
+
+:root{--bg:#f5f5ff;--panel:#fff;--panel2:#f0f7ff;--edge:#dcdcf5;--muted:#64748b;--text:#24334b;--mint:#a4eed7;--gold:#ffb85b;--blue:#5e91ec;--shadow:0 14px 28px #534d9b1c}
+body{background:radial-gradient(circle at 0 0,#fdf0fd 0,transparent 34%),radial-gradient(circle at 100% 25%,#dcf6ff 0,transparent 40%),var(--bg);color:var(--text)}
+.btn{background:#fff;color:#42516d;border-color:#c7d5ed;border-radius:14px}.btn.active,.btn.primary{background:linear-gradient(120deg,#7377e7,#4a9dcf);border-color:transparent;color:white}.btn.red{color:#b83c61;border-color:#eebacb}.status{background:#e9fcf4;color:#21836a;border-color:#b9ead6}.logo{background:linear-gradient(135deg,#fbb6ce,#8acbeb);border-color:#fff}.board-head{background:linear-gradient(110deg,#e2e8ff,#eaf8ff 60%,#fff0ee);border:2px solid #fff;box-shadow:var(--shadow)}.eyebrow{color:#8a68cc}.subtitle,.date-line{color:#667b99}.clock{font-size:var(--clock-size,80px);color:#394f99;font-weight:950;text-shadow:3px 4px 0 #d9e2ff}.selector-row label,.modehint{color:#65768f}.selector-row select,.selector-row input{background:#fff;color:#25344c;border:1px solid #cdd5eb}.panel{background:var(--panel);border:2px solid #fff;box-shadow:var(--shadow);border-radius:23px}.panel-head{border-color:#e8eaf6;background:linear-gradient(90deg,#f7f2ff,#fff)}.panel-head h2{font-size:calc(1.15em * var(--card-font,1))}.panel-head small,.seat-meta{color:#6d8198}.exam-chip{background:#b9f5e3;color:#286759}.exam-subject{color:#514f9c}.exam-time{color:#4f6485}.exam-extra,.countdown .label{color:#66758f}.countdown{background:#faf5ff;border:1px solid #e7daf7}.countdown .num{color:#c77a28}.exam-row{border-color:#e5e8f3}.exam-row.current{background:#ebfbf4}.exam-row .time{color:#738199}.exam-row .pill{border-color:#dbe2f0;color:#728398}.exam-row.current .pill{color:#27866e;border-color:#9bddcc}.teacher{background:#fff0e0;color:#95633a;border-color:#f2b981}.seat{background:#e9f6ff;color:#385c90;border-color:#9bd1f5}.seat i{color:#5a89ad}.seat.empty{color:#a4aac2}.notice{border-color:#e5e8f3}.notice .bullet{color:#bd81c4}.foot{color:#8393aa}.note{background:#f1f6ff;color:#58708f;border-color:#cbdafa}.file-zone{background:#f7f7ff;border-color:#b5b5e8}.tag{color:#348f7c}.field label{color:#495c79}.field input,.field select,.field textarea,.admin-table td input{background:#fff;color:#27384e;border-color:#cad5eb}.admin-table td,.admin-table th{border-color:#e2e8f2}.admin-table th{color:#667892}.top-alert{background:#fff2d9;color:#8b5c25;border-color:#f5ca82}.empty-state{color:#7e91a5}
+.board-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;align-items:start}.layout-card{grid-column:span var(--card-span,6);font-size:calc(16px * var(--card-font,1));min-width:0}.layout-card .panel-head{padding:16px 21px}.layout-card .notice{font-size:1.05em}.layout-card .exam-row .subject{font-size:1.25em}.layout-card .exam-row .time{font-size:.95em}.layout-card .seat{font-size:1.2em}.layout-card .exam-subject{font-size:calc(70px * var(--card-font,1))}.layout-card .exam-time{font-size:calc(27px * var(--card-font,1))}.layout-card .countdown .num{font-size:calc(38px * var(--card-font,1))}.layout-card .main-exam{min-height:220px}.layout-card .seat-wrap{padding:14px 18px}.layout-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0}.layout-caption{font-weight:900;color:#6d5aaf;margin-right:auto}.layout-caption span{font-weight:500;color:#8a92a8;font-size:12px;margin-left:8px}.board-grid.editing .layout-card{outline:3px dashed #8b8be5;outline-offset:2px;cursor:grab}.board-grid.editing .panel-head{cursor:grab}.board-grid.editing .layout-card.dragging{opacity:.45}.board-grid.editing .layout-card.drop-target{outline:4px solid #fb8eae}.attendance-display{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:18px}.att-stat{border-radius:18px;background:#eaf1ff;color:#436eb1;text-align:center;padding:16px 4px}.att-stat.present{background:#e2faed;color:#288a69}.att-stat.absent{background:#fff0ee;color:#bb5962}.att-stat span{font-size:.9em;font-weight:800;display:block}.att-stat b{font-size:3.3em;line-height:1.25;font-weight:950;font-variant-numeric:tabular-nums}.att-stat em{font-size:.9em;font-style:normal;margin-left:3px}.absence-note{margin:0 18px 20px;background:#fff8e8;padding:12px 15px;border-radius:13px;color:#8c6643;white-space:pre-wrap;overflow-wrap:anywhere}.layout-item{display:grid;grid-template-columns:minmax(130px,1fr) minmax(100px,2fr) minmax(140px,1fr);gap:14px;align-items:center;border-bottom:1px dashed #d9deeb;padding:13px 0}.layout-item label{font-weight:800}.layout-item select{color:#29405d;background:white;border:1px solid #c4d2e9;border-radius:8px;padding:8px}.layout-item input{width:100%;accent-color:#8274d2}.layout-item output{font-size:13px;color:#64748b}body.fullboard .board-grid{gap:12px}body.fullboard .layout-toolbar{display:none}body.fullboard .layout-card .notice{font-size:1.15em}
+@media(max-width:900px){.layout-card{grid-column:span 12!important}.board-grid{grid-template-columns:repeat(12,minmax(0,1fr))}}@media(max-width:650px){.layout-item{grid-template-columns:1fr}.clock{font-size:48px!important}.att-stat b{font-size:2.5em}}
+
+/* V1.3: clock is a part of the current-exam card, not an independent header item. */
+.board-head{justify-content:flex-start}
+.exam-now{margin:18px 22px 0;padding:16px 22px;text-align:center;border-radius:19px;background:linear-gradient(125deg,#e5efff,#f8eaff);border:2px solid #e4e8fa}
+.exam-now-label{font-size:calc(18px * var(--card-font,1));font-weight:900;color:#6e71af}
+#cardExam .clock{font-size:calc(var(--clock-size,84px) * var(--card-font,1));font-variant-numeric:tabular-nums;white-space:nowrap;overflow-wrap:normal;letter-spacing:-.035em;line-height:1.18;max-width:100%;overflow:hidden}
+#cardExam .date-line{font-size:calc(16px * var(--card-font,1));margin:4px 0 0}
+.layout-card{min-height:var(--card-height,0px);overflow-wrap:anywhere}
+.layout-card .panel-head h2{font-size:calc(20px * var(--card-font,1))}
+.layout-card .panel-head small{font-size:calc(12px * var(--card-font,1))}
+.layout-card .exam-chip{font-size:calc(13px * var(--card-font,1))}
+.layout-card .exam-extra{font-size:calc(16px * var(--card-font,1))}
+.layout-card .countdown .label{font-size:calc(16px * var(--card-font,1))}
+.layout-card .exam-row .pill{font-size:calc(12px * var(--card-font,1))}
+.layout-card .notice{font-size:calc(17px * var(--card-font,1))}
+.layout-card .seat-meta{font-size:calc(12px * var(--card-font,1))}
+.layout-card .teacher{font-size:calc(16px * var(--card-font,1))}
+.layout-card .seat{font-size:calc(20px * var(--card-font,1))}
+.layout-card .seat i{font-size:calc(10px * var(--card-font,1))}
+.layout-card .att-stat span,.layout-card .att-stat em{font-size:calc(15px * var(--card-font,1))}
+.layout-card .att-stat b{font-size:calc(52px * var(--card-font,1))}
+.layout-card .absence-note{font-size:calc(16px * var(--card-font,1))}
+.layout-item{grid-template-columns:minmax(125px,1fr) minmax(160px,2fr) minmax(125px,1fr) minmax(155px,2fr)}
+.layout-item > div{display:flex;flex-direction:column;gap:7px}
+.layout-item > div > label{font-weight:600;font-size:13px}
+@media(max-width:1100px){.layout-item{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.layout-item{grid-template-columns:1fr}.layout-card .att-stat b{font-size:calc(38px * var(--card-font,1))}}
+
+/* V1.4 compact classroom indicator and direct card resizing */
+.board-head{padding:16px 25px}.heading-main{display:flex;align-items:center;justify-content:space-between;gap:15px;width:100%;min-width:0}.heading-main>div{min-width:0}.board-head h1{font-size:clamp(25px,2.6vw,42px);margin:3px 0}.board-head .subtitle{font-size:clamp(13px,1.1vw,17px)}
+.classroom-tag{flex:0 0 auto;background:#fff;border:1px solid #cbc9f1;color:#62579c;border-radius:100px;padding:9px 16px;font-size:clamp(15px,1.4vw,21px);font-weight:900;white-space:nowrap;box-shadow:0 3px 9px #9294cf21}
+.layout-card{position:relative;min-height:var(--card-height,0px);align-self:stretch}.layout-card .resize-grip{display:none;position:absolute;bottom:5px;right:5px;width:38px;height:38px;z-index:6;background:#7566df;color:white;font-size:24px;line-height:1;border:2px solid white;border-radius:12px;cursor:nwse-resize;touch-action:none;user-select:none;box-shadow:0 2px 10px #42498a66}
+.board-grid.editing .resize-grip{display:block}.board-grid.editing .layout-card{padding-bottom:38px}.board-grid.editing .resize-grip:hover,.board-grid.editing .resize-grip:focus-visible{background:#4239a3;outline:2px solid #b4b4ff}.board-grid.editing .layout-card.resizing{outline:3px solid #655be3;cursor:nwse-resize}.board-grid.editing .layout-card.resizing *{user-select:none}
+@media(max-width:900px){.board-grid.editing .resize-grip{display:block}.classroom-tag{padding:7px 11px}.heading-main{flex-wrap:wrap}}
+
+/* V1.5 larger schedule; separately controlled reading sizes */
+.classroom-tag{font-size:clamp(23px,2.3vw,35px);padding:12px 22px;max-width:min(43vw,560px);white-space:normal;text-align:center;line-height:1.25}
+#cardSchedule .exam-row{grid-template-columns:minmax(145px, 30%) minmax(0,1fr) auto;gap:17px;padding:19px 13px}
+#cardSchedule .exam-row .time{font-size:calc(23px * var(--card-font,1) * var(--schedule-time-font,1));line-height:1.3;font-weight:850;white-space:nowrap;letter-spacing:.015em;color:#3d5c88}
+#cardSchedule .exam-row .subject{font-size:calc(28px * var(--card-font,1) * var(--schedule-subject-font,1));font-weight:900;line-height:1.3;overflow-wrap:anywhere;color:#34416f}
+#cardSchedule .exam-row .pill{font-size:calc(13px * var(--card-font,1))}
+#cardNotice .notice{font-size:calc(19px * var(--card-font,1));line-height:1.65}
+.quick-slider{display:grid;grid-template-columns:minmax(165px,auto) 1fr 72px;align-items:center;gap:13px;margin:12px 0;padding:12px 16px;background:#f4f6ff;border:1px solid #dde4f7;border-radius:13px;color:#39476f}
+.quick-slider input{width:100%;accent-color:#7469db}.quick-slider output{font-weight:900;text-align:right;color:#4b50a4}
+.room-add{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.room-add input{flex:1;min-width:190px;max-width:350px;background:white;color:#243650;border:1px solid #b6c3de;border-radius:10px;padding:11px}
+@media(max-width:750px){.classroom-tag{font-size:22px;max-width:100%}#cardSchedule .exam-row{grid-template-columns:120px minmax(0,1fr);gap:10px}#cardSchedule .exam-row .pill{grid-column:2;justify-self:start}#cardSchedule .exam-row .time{font-size:calc(18px * var(--card-font,1) * var(--schedule-time-font,1))}#cardSchedule .exam-row .subject{font-size:calc(22px * var(--card-font,1) * var(--schedule-subject-font,1))}.quick-slider{grid-template-columns:1fr 72px}.quick-slider label{grid-column:1 / -1}}
+
+/* V1.6: time as a single legible line, compact subject cell */
+#cardSchedule .exam-row{grid-template-columns:max-content minmax(100px,1fr) auto;gap:clamp(8px,1.1vw,16px);padding:13px 12px}
+#cardSchedule .exam-row .time{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:calc(clamp(18px,2vw,30px) * var(--card-font,1) * var(--schedule-time-font,1));letter-spacing:-.035em}
+#cardSchedule .exam-row .subject{font-size:calc(clamp(18px,1.8vw,26px) * var(--card-font,1) * var(--schedule-subject-font,1));min-width:0;overflow-wrap:anywhere}
+#cardSchedule .exam-row .pill{font-size:11px;padding:4px 6px}
+#cardSchedule .schedule{overflow-x:auto}
+.seat-mini{max-width:650px;margin:12px auto 24px}.seat-mini .seat{font-size:14px;aspect-ratio:1.8;min-height:34px}
+@media(max-width:750px){#cardSchedule .exam-row{grid-template-columns:max-content minmax(90px,1fr)}#cardSchedule .exam-row .pill{display:none}#cardSchedule .exam-row .time{font-size:calc(17px * var(--card-font,1) * var(--schedule-time-font,1))}}
+
+/* V1.7 seat management */
+.seat-manager{border:1px solid #d6dff4;background:#f8faff;border-radius:17px;padding:18px;margin:16px 0}
+.seat-manager h3{margin:0 0 10px;color:#404f7b}.seat-manager .help{margin:7px 0 15px!important}
+.roster-scroll{max-height:390px;overflow:auto}.roster-table{min-width:900px}.roster-table td{vertical-align:middle}
+.roster-table input,.roster-table select{background:#fff!important;color:#25344c!important;border:1px solid #c7d1e6!important;min-width:78px!important}
+.roster-table input[type=checkbox]{width:auto!important;min-width:0!important}.roster-table input[type=text]{width:130px}
+.roster-table .short{width:68px!important;min-width:65px!important}
+.seat.student{cursor:pointer;user-select:none;touch-action:manipulation;min-width:0;padding:4px 2px;gap:2px;aspect-ratio:auto;min-height:65px;line-height:1.15;text-align:center;overflow:hidden}
+.seat.student strong{font-size:clamp(12px,1.2vw,19px);overflow-wrap:anywhere}
+.seat.student .student-class{font-size:10px;opacity:.72}
+.seat.student .student-status{font-size:10px;font-weight:800}
+.seat.student[data-status=absent]{background:#ffe3e3;border-color:#e68787;color:#9a3448}
+.seat.student[data-status=late]{background:#fff0cf;border-color:#e9be60;color:#956526}
+.seat.student[data-status=leave]{background:#e5e4f2;border-color:#aaa3cf;color:#656184}
+.seat.student[data-status=present]{background:#dcf7eb;border-color:#81ccb0;color:#227a65}
+.seat.student[draggable=true]{cursor:grab}.seat.student.drag-over{outline:3px dashed #7077db}
+.seat-empty-small{min-height:65px;aspect-ratio:auto}
+.seat-status-help{font-size:13px;color:#5d7193;margin:10px 2px 0;line-height:1.5}
+.warning-list{white-space:pre-line;color:#9a5b21;background:#fff8e6;padding:12px;border:1px solid #eedcb2;border-radius:10px;margin-top:12px}
+.room-pill{font-size:12px;background:#e6f4f9;padding:5px 11px;border-radius:99px;color:#376b8a;font-weight:700}
+@media(max-width:650px){.seat-manager{padding:10px}.seat.student strong{font-size:12px}}
+</style>
+<style>
+/* V1.9 classroom-oriented layout */
+#cardExam .exam-subject{text-align:center;align-self:stretch}
+#paneSchedule .admin-table th:nth-child(3),#paneSchedule .admin-table td:nth-child(3){text-align:center}
+#paneSchedule .admin-table td:nth-child(3) input{text-align:center;font-weight:800;font-size:1.12em}
+#cardSchedule .exam-row .subject{text-align:center}
+.seat.student{min-height:76px;aspect-ratio:auto;padding:8px 3px;gap:4px;overflow-wrap:anywhere;text-align:center}
+.seat.student .student-seat-number{font-size:clamp(11px,1.05vw,17px);font-weight:850;color:#6176a7}
+.seat.student strong{font-size:clamp(14px,1.5vw,22px)}
+.seat.student .student-status{font-size:11px}
+@media(max-width:750px){.seat.student strong{font-size:13px}}
+</style></head>
+<body>
+<div class="shell">
+<header class="topbar"><div class="brand"><div class="logo">▦</div><div><b>段考監考教室系統</b><small>EXAM ROOM DISPLAY · V1.7 名冊混排・座位管理中心</small></div></div><div class="nav"><span class="status">● 本機資料已啟用</span><button class="btn active" id="boardNav" onclick="showMode('board')">▣ 電子白板</button><button class="btn" id="adminNav" onclick="showMode('admin')">⚙ 後台管理</button><button class="btn ghost" onclick="toggleFull()">⛶ 全螢幕</button></div></header>
+<div id="boardView">
+<section class="board-head"><div class="heading-main"><div><div class="eyebrow">EXAMINATION SCHEDULE</div><h1 id="schoolTitle">115 學年度・第 2 次定期評量</h1><div class="subtitle" id="roomTitle">八年級</div></div><span class="classroom-tag" id="classroomTag">🏫 知足班</span></div></section>
+<div class="selector-row"><label for="viewDate">考試日期</label><select id="viewDate" onchange="changeSelection()"></select><label for="viewGrade">年段</label><select id="viewGrade" onchange="changeSelection()"><option>高一</option><option>高二</option><option>高三</option></select><label for="viewRoom">教室</label><select id="viewRoom" onchange="changeRoom()"></select><span class="modehint">資訊會依日期與年段切換 · 投影適用</span></div>
+<div class="top-alert" id="alert"></div>
+<div class="layout-toolbar"><div class="layout-caption">🌈 繽紛教室看板 <span>編輯模式：拖曳標題換位置、拉右下角改大小；其餘方格自動重排</span></div><button class="btn" id="layoutEditBtn" onclick="toggleLayoutEdit()">✋ 編輯方格位置／大小</button><button class="btn ghost" onclick="resetLayout()">↺ 還原排版</button></div><div class="board-grid"><section class="panel layout-card" data-card="exam" draggable="false" id="cardExam"><div class="panel-head"><h2>📖 目前考試資訊</h2><small id="phaseText">依目前時間自動顯示</small></div><div class="exam-now"><div class="exam-now-label">🕒 現在時間</div><div class="clock" id="liveClock">08:30:00</div><div class="date-line" id="liveDate">2026/11/17 星期二</div></div><div class="main-exam"><span class="exam-chip" id="examChip">今日考程</span><div class="exam-subject" id="mainSubject">國文</div><div class="exam-time" id="mainTime">08:20 — 09:30</div><div class="exam-extra" id="examExtra">請依監考教師指示應試</div></div><div class="countdown"><span class="label" id="countLabel">距離結束</span><span class="num" id="countValue">00:00:00</span></div><button aria-label="調整exam方格的寬度與高度" class="resize-grip" data-resize="exam" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="schedule" draggable="false" id="cardSchedule"><div class="panel-head"><h2>🗓 當日考試時程</h2><small id="scheduleCaption"></small></div><div class="schedule" id="scheduleList"></div><button aria-label="調整schedule方格的寬度與高度" class="resize-grip" data-resize="schedule" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="seat" draggable="false" id="cardSeat"><div class="panel-head"><h2>🪑 考試座位配置</h2><small id="seatCaption">由講台往後看</small></div><div class="seat-wrap"><div class="seat-meta"><span>前方／黑板</span><span id="seatMeta"></span></div><div class="teacher">講　台</div><div class="seats" id="seatGrid"></div><div class="seat-status-help" id="seatStatusHint"></div></div><button aria-label="調整seat方格的寬度與高度" class="resize-grip" data-resize="seat" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="notice" draggable="false" id="cardNotice"><div class="panel-head"><h2>📌 考試注意事項</h2><small>請同學遵守</small></div><div class="notice-list" id="noticeList"></div><button aria-label="調整notice方格的寬度與高度" class="resize-grip" data-resize="notice" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="attendance" draggable="false" id="cardAttendance"><div class="panel-head"><h2>🙋 今日應考人數</h2><small>依日期・年段・教室</small></div><div class="attendance-display"><div class="att-stat"><span>應到</span><b id="expectedDisplay">30</b><em>人</em></div><div class="att-stat present"><span>實到</span><b id="actualDisplay">29</b><em>人</em></div><div class="att-stat absent"><span>未到</span><b id="absentDisplay">1</b><em>人</em></div></div><div class="absence-note" id="absenceNoteDisplay">缺席備註：尚未填寫</div><button aria-label="調整出缺席方格的寬度與高度" class="resize-grip" data-resize="attendance" title="拖曳此處調整方格大小" type="button">↘</button></section></div>
+</div>
+<div class="hidden" id="adminView"><div class="admin-layout"><aside class="admin-tabs"><button class="btn active" id="tabSchedule" onclick="openTab('schedule')">📅 考程管理</button><button class="btn" id="tabSeat" onclick="openTab('seat')">🪑 班級座位安排</button><button class="btn" id="tabNotice" onclick="openTab('notice')">📌 注意事項</button><button class="btn" id="tabAttendance" onclick="openTab('attendance')">🙋 出缺席登記</button><button class="btn" id="tabLayout" onclick="openTab('layout')">🎨 白板外觀</button><button class="btn" id="tabImport" onclick="openTab('import')">📥 匯入檔案</button><button class="btn" id="tabSettings" onclick="openTab('settings')">⚙ 基本設定</button></aside><main class="panel admin-content">
+<section id="paneSchedule"><h2>考程管理</h2><p class="help">按照日期、年段編輯考試科目與起迄時間。修改後立即更新白板，並自動保存在目前瀏覽器。</p><div class="fields"><div class="field"><label>日期</label><input id="editDate" onchange="renderAdminSchedule()" type="date"/></div><div class="field"><label>年段</label><select id="editGrade" onchange="renderAdminSchedule()"><option>七年級</option><option>八年級</option><option>九年級</option><option>高一</option><option>高二</option><option>高三</option></select></div><div class="field"><label>快捷操作</label><button class="btn" onclick="copyPreviousDay()">複製上一考試日考程</button></div></div><div class="actions"><button class="btn primary" onclick="addExam()">＋ 新增考試</button><button class="btn" onclick="saveExams()">儲存本日考程</button><button class="btn red" onclick="clearDay()">清除此日考程</button></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>開始</th><th>結束</th><th>科目</th><th>備註</th><th>操作</th></tr></thead><tbody id="examEditor"></tbody></table></div></section>
+<section class="hidden" id="paneSeat"><h2>🪑 班級座位安排</h2><p class="help">依班級日常需求安排座位：依座號或隨機排序、固定座位、前後排、指定同學分開。匯入名冊後可拖曳互換。</p>
+<div class="fields">
+<div class="field" style="display:none"><label>班級／教室名稱</label><input id="seatRoomName" oninput="previewSeats()" placeholder="例如：知足班"/></div>
+<div class="field"><label>橫向座位數（欄）</label><input id="seatCols" max="12" min="1" oninput="previewSeats()" type="number"/></div>
+<div class="field"><label>縱向座位數（排）</label><input id="seatRows" max="12" min="1" oninput="previewSeats()" type="number"/></div>
+<div class="field"><label>起始座號</label><input id="seatStart" max="999" min="1" oninput="previewSeats()" type="number"/></div>
+<div class="field"><label>編號順序</label><select id="seatOrder" onchange="previewSeats()"><option value="row">逐排排列</option><option value="snake">逐排蛇形</option><option value="column">逐欄排列</option></select></div>
+<div class="field"><label>起點方位</label><select id="seatCorner" onchange="previewSeats()"><option value="front-left">前方左側</option><option value="front-right">前方右側</option><option value="back-left">後方左側</option><option value="back-right">後方右側</option></select></div>
+<div class="field" style="display:none"><label>啟用座位模式</label><select id="seatPattern" onchange="previewSeats()"><option value="normal">所有座位</option><option value="checker">梅花座（隔位）</option><option value="alternateRows">隔排入座</option><option value="alternateCols">隔欄入座</option></select></div>
+<div class="field" style="display:none"><label>座號間隔</label><select id="seatStep" onchange="previewSeats()"><option value="1">連號 1、2、3</option><option value="2">隔號 1、3、5</option><option value="3">每隔 2 號 1、4、7</option></select></div>
+<div class="field" style="display:none"><label>排定人數上限（留白表示不限）</label><input id="seatLimit" min="1" oninput="previewSeats()" placeholder="例如：28" type="number"/></div>
+<div class="field" style="display:none"><label>保留空排（從起點方向計）</label><input id="seatOffset" max="11" min="0" oninput="previewSeats()" placeholder="0" type="number"/></div>
+<div class="field" style="display:none"><label>座號前綴（選填）</label><input id="seatPrefix" maxlength="8" oninput="previewSeats()" placeholder="例：A-"/></div>
+<div class="field wide" style="display:none"><label>指定不使用的座位（排-欄，以畫面左上為 1-1）</label><textarea id="seatSkip" oninput="previewSeats()" placeholder="例如：1-2; 2-4; 3-6" rows="2"></textarea><div class="mini">使用分號隔開，適用留空位、損壞座位或特殊安排；座位圖中以 — 標示。</div></div>
+<div class="field wide" style="display:none"><label style="display:flex;align-items:center;gap:8px"><input id="seatReverse" onchange="previewSeats()" style="width:auto" type="checkbox"/> 反轉編號次序（可搭配以上所有規則）</label></div>
+</div><div class="actions"><button class="btn primary" onclick="saveSeats()">✅ 儲存並套用座位</button><button class="btn" onclick="resetSeats()">↺ 恢復預設</button></div>
+<div class="seat-manager" id="seatManager">
+<h3>👩‍🏫 班級座位與學生名冊</h3>
+<p class="help">建議下載 Excel（.xlsx）範本填寫「班級、座號、姓名」，不要改動表頭；也支援 CSV（UTF-8 / Big5 / UTF-16）。匯入後按「產生班級座位表」。資料僅儲存在此瀏覽器。</p>
+<div class="fields">
+<div class="field"><label>📂 匯入學生名冊（CSV / Excel）</label><input accept=".csv,.xlsx,.xls" id="rosterFile" onchange="importRoster(event)" type="file"/></div>
+<div class="field"><label>班級常用排座方式</label><select id="mixedStrategy" value="ordered"><option value="shuffle">隨機打散</option><option value="ordered">依座號順序</option></select></div>
+<div class="field" style="display:none"><label>隨機種子（選填）</label><input id="seatSeed" placeholder="如 115" value="115"/></div>
+<div class="field" style="display:none"><label>九宮格限制說明</label><div class="note" style="margin:0">學生可勾選「周圍九宮格不安排他人」，或「僅與指定學生避開九宮格」，兩種條件可分開使用。</div></div>
+</div>
+<div class="actions"><button class="btn primary" onclick="downloadRosterXlsxTemplate()">⬇ Excel 名冊範本（推薦）</button><button class="btn" onclick="downloadRosterTemplate()">↓ CSV 範本（UTF-8）</button><button class="btn" onclick="addDemoRoster()">👩‍🎓 載入示範班級名冊</button><button class="btn primary" onclick="runSeatPlan()">✨ 產生班級座位表</button><button class="btn" onclick="clearSeatOverrides()">↺ 清除手動換位</button></div>
+<div class="note" id="rosterImportStatus" role="status">請先下載 Excel 範本填寫名冊，或上傳既有 Excel / CSV。</div><div class="note" id="rosterSummary">尚未匯入學生名冊。</div>
+<div class="fields"><div class="field"><label>學生條件編輯（本考場）</label><select id="ruleStudent" onchange="showStudentRules()"></select></div>
+<div class="field"><label>安排前排／後排</label><select id="ruleZone"><option value="any">不限</option><option value="front">前排（前 1/3）</option><option value="back">後排（後 1/3）</option></select></div>
+<div class="field"><label>固定座位：第幾排</label><input id="ruleRow" max="12" min="1" placeholder="如 1" type="number"/></div>
+<div class="field"><label>固定座位：第幾欄</label><input id="ruleCol" max="12" min="1" placeholder="如 3" type="number"/></div>
+<div class="field"><label>指定兩位同學不要相鄰（可複選）</label><select id="ruleAvoid" multiple="" size="5"></select><div class="mini">按 Ctrl／Command 可複選；視為雙向約束。</div></div>
+<div class="field" style="display:none"><label>其他限制（可複選）</label><label><input id="ruleNoNeighbor" type="checkbox"/> 上下左右不可鄰近任何人</label><label><input id="ruleNoNine" type="checkbox"/> 九宮格周圍不可有其他人</label><label><input id="ruleAvoidNine" type="checkbox"/> 與指定學生不可在九宮格內</label></div></div>
+<div class="actions"><button class="btn primary" onclick="saveStudentRules()">💾 儲存此學生限制</button><button class="btn" onclick="deleteStudentRules()">移除此學生限制</button></div>
+<h3>📋 班級學生名冊</h3><div class="roster-scroll"><table class="admin-table roster-table"><thead><tr><th>編號</th><th>原班級</th><th>座號</th><th>姓名</th><th>分派考場</th><th>狀態</th><th>操作</th></tr></thead><tbody id="rosterRows"></tbody></table></div>
+<div class="actions"><button class="btn" onclick="addStudentRow()">＋ 新增學生</button><button class="btn" onclick="moveRosterToRoom()" style="display:none">將全部名冊分派到目前考場</button><button class="btn red" onclick="clearCurrentRoomRoster()">清除本考場名冊</button></div>
+<h3 style="display:none">🏥 額外考場</h3><div class="fields" style="display:none"><div class="field"><label>新增額外考場名稱</label><input id="extraRoomName" placeholder="例如：補考考場／特殊考場"/></div><div class="field"><label>額外考場類型</label><select id="extraRoomKind"><option value="extra">額外考場</option><option value="makeup">補考考場</option><option value="support">特殊安排考場</option></select></div></div>
+<div class="actions" style="display:none"><button class="btn primary" onclick="addExtraExamRoom()">＋ 建立額外考場</button></div><div class="seat-status-help" id="extraRoomList" style="display:none"></div>
+<div class="warning-list" id="planWarnings" role="status" style="display:none"></div>
+<div class="note">💡 可在座位圖拖曳學生交換位置，也可點擊學生切換出缺席。固定座位及指定不相鄰的條件仍會檢查。</div>
+</div><div class="note" id="seatPreview">座位預覽</div><div class="seats seat-mini" id="seatMiniPreview"></div><p class="mini">班級座位圖顯示座號和姓名，可拖曳調換；如有無法安排的學生，系統會提示。</p></section>
+<section class="hidden" id="paneNotice"><h2>考試注意事項</h2><p class="help">一行一則提醒，電子白板會即時呈現。下方可直接放大白板上的注意事項文字。</p><div class="quick-slider"><label for="noticeFontQuick">📌 注意事項字體大小</label><input id="noticeFontQuick" max="230" min="60" oninput="setCardFont('notice',this.value)" step="5" type="range"><output id="noticeFontQuickLabel">100%</output></input></div><div class="field"><label>提醒內容</label><textarea id="noticesInput" placeholder="每行輸入一則提醒" rows="9"></textarea></div><div class="actions"><button class="btn primary" onclick="saveNotices()">儲存注意事項</button></div></section>
+<section class="hidden" id="paneImport"><h2>檔案匯入</h2><p class="help">支援 PDF、Excel、CSV 和圖片。新版會依 PDF 的「日期區塊／節次直欄／年級橫列」還原考程，高中分組科目保留班級代碼；掃描頁仍需 OCR 並人工核對。</p><div class="file-zone"><div style="font-size:34px">📂</div><b>選取考程表或截圖</b><div class="mini">PDF、Excel 在瀏覽器解析；掃描 PDF／圖片使用 OCR（需連線，匯入前請核對）</div><input accept=".xlsx,.xls,.csv,.png,.jpg,.jpeg,.webp,image/*,.pdf,application/pdf" id="fileInput" onchange="importFile(event)" type="file"/></div><div class="note" id="importStatus">提示：Excel 欄名建議使用「日期、年段、科目、開始時間、結束時間」；也支援「考試時間」欄位，例如 08:20-09:30。PDF 分組科目會保留原班級代碼。</div><div class="actions"><button class="btn" onclick="downloadTemplate()">↓ 下載 CSV 匯入範本</button><button class="btn primary" disabled="" id="confirmImport" onclick="confirmImport()">確認匯入核對資料</button><button class="btn" onclick="clearPreview()">清除預覽</button></div><div class="preview-wrap"><table class="admin-table"><thead><tr><th>日期</th><th>年段</th><th>科目</th><th>開始</th><th>結束</th><th>備註／班別</th><th>選取</th></tr></thead><tbody id="importPreview"></tbody></table></div><details style="margin-top:20px"><summary>圖片辨識原文／偵錯資訊</summary><pre id="ocrText" style="white-space:pre-wrap;color:#bbd2e0"></pre></details></section>
+<section class="hidden" id="paneSettings"><h2>基本設定及資料備份</h2><p class="help">設定學年度考試名稱與教室，並可匯出／還原所有資料。初版資料保存在「此裝置此瀏覽器」，不是跨設備雲端同步。</p><div class="fields"><div class="field wide"><label>考試名稱</label><input id="settingTitle"/></div><div class="field"><label>預設年段</label><select id="settingGrade"><option>七年級</option><option>八年級</option><option>九年級</option><option>高一</option><option>高二</option><option>高三</option></select></div><div class="field"><label>目前教室</label><select id="settingRoom"></select></div></div><div class="actions"><button class="btn primary" onclick="saveSettings()">儲存設定</button><div class="room-add"><input aria-label="新增教室或班級名稱" id="newRoomName" maxlength="30" onkeydown="if(event.key==='Enter')addRoom()" placeholder="自訂班級名稱，例如：清淨班"><button class="btn" onclick="addRoom()">＋ 新增班級／教室</button></input></div><button class="btn" onclick="exportJSON()">↓ 匯出系統備份 JSON</button><label class="btn">↑ 還原備份 <input accept="application/json,.json" class="visually-hidden" onchange="restoreJSON(event)" type="file"/></label><button class="btn red" onclick="resetAll()">清除並還原範例</button></div><div class="note"><b>發布到網路：</b>這份 HTML 可直接放到 GitHub Pages 使用和修改，但目前每部電腦各自儲存資料；若要由辦公室後台修改後，所有教室電子白板自動同步，需要下一階段串接雲端資料庫與管理者登入權限。</div></section>
+<section class="hidden" id="paneAttendance"><h2>🙋 出缺席登記</h2><p class="help">每組「日期 × 年段 × 教室」獨立紀錄；座位有名冊時可直接點擊更新出缺席，無名冊仍可手動登記。請勿在備註輸入敏感個資，電子白板會直接顯示。</p><div class="fields"><div class="field"><label>考試日期</label><input id="attDate" onchange="loadAttendanceForm()" type="date"/></div><div class="field"><label>年段</label><select id="attGrade" onchange="loadAttendanceForm()"><option>七年級</option><option>八年級</option><option>九年級</option><option>高一</option><option>高二</option><option>高三</option></select></div><div class="field"><label>教室</label><select id="attRoom" onchange="loadAttendanceForm()"></select></div><div class="field"><label>應到人數</label><input id="attExpected" max="500" min="0" oninput="recalcAttendance()" type="number" value="30"/></div><div class="field"><label>實到人數</label><input id="attActual" max="500" min="0" oninput="recalcAttendance()" type="number" value="29"/></div><div class="field"><label>未到人數（自動）</label><input id="attAbsent" readonly="" value="1"/></div><div class="field wide"><label>未到備註說明（電子白板顯示）</label><textarea id="attNote" placeholder="例：1 人請假；待確認原因" rows="3"></textarea></div></div><div class="actions"><button class="btn primary" onclick="saveAttendance()">儲存出缺席資訊</button><button class="btn" onclick="useBoardAttendance()">帶入目前白板的日期／年段／教室</button></div></section>
+<section class="hidden" id="paneLayout"><h2>🎨 白板外觀與尺寸</h2><p class="help">逐張調整字體，或回白板按「編輯方格位置／大小」，拖曳標題換位置、拖拉右下角改寬高。同列另一張方格會自動配合縮放，其餘方格跟著重排；調整會自動保存。</p><div class="note">💡 建議電子白板使用「全螢幕」。放大字體後若資訊較長，畫面可能需要往下捲動。</div><div class="quick-slider"><label for="scheduleTimeSize">🕘 當日考程：時間字體</label><input id="scheduleTimeSize" max="200" min="75" oninput="setScheduleFont('time',this.value)" step="5" type="range"><output id="scheduleTimeSizeLabel">100%</output></input></div><div class="quick-slider"><label for="scheduleSubjectSize">📚 當日考程：科目字體</label><input id="scheduleSubjectSize" max="200" min="75" oninput="setScheduleFont('subject',this.value)" step="5" type="range"><output id="scheduleSubjectSizeLabel">100%</output></input></div><div id="layoutControls"></div><div class="fields"><div class="field"><label>「目前考試資訊」內的即時時鐘字體大小</label><input id="clockSize" max="140" min="46" oninput="setClockSize(this.value)" step="2" type="range"><span class="mini" id="clockSizeLabel"></span></input></div></div><div class="actions"><button class="btn primary" onclick="saveLayoutControls()">儲存外觀設定</button><button class="btn" onclick="resetLayout()">恢復預設外觀和順序</button></div></section></main></div></div>
+<footer class="foot">段考電子白板 · 教學現場初版展示 · 考試資料請以學校公告為準</footer>
+</div><div class="toast" id="toast" role="status"></div>
+<script>
+'use strict';
+const STORE='exam-board-prototype-v1';
+const grades=['七年級','八年級','九年級','高一','高二','高三'];
+const demoDate='2026-11-17';
+const SAMPLE={title:'115 學年度・第 2 次定期評量',grade:'八年級',room:'知足班',rooms:{'知足班':{cols:6,rows:5,start:1,order:'snake',pattern:'normal'}},notices:['考試開始前請將手機關機並放置指定位置。','桌面僅可放置應試所需文具。','請依監考教師指示作答，不得交談或互借文具。','考試結束鈴響後立即停止作答，靜候收卷。'],exams:[{date:'2026-11-17',grade:'八年級',subject:'國文',start:'08:20',end:'09:30',note:'請備妥 2B 鉛筆'},{date:'2026-11-17',grade:'八年級',subject:'英語',start:'09:50',end:'10:50',note:'含英語聽力測驗'},{date:'2026-11-17',grade:'八年級',subject:'數學',start:'11:10',end:'12:10',note:''},{date:'2026-11-18',grade:'八年級',subject:'自然',start:'08:20',end:'09:30',note:''},{date:'2026-11-18',grade:'八年級',subject:'社會',start:'09:50',end:'10:50',note:''},{date:'2026-11-17',grade:'七年級',subject:'國文',start:'08:20',end:'09:30',note:''},{date:'2026-11-17',grade:'七年級',subject:'數學',start:'09:50',end:'10:50',note:''},{date:'2026-11-17',grade:'九年級',subject:'英語',start:'08:20',end:'09:30',note:''},{date:'2026-11-17',grade:'九年級',subject:'自然',start:'09:50',end:'10:50',note:''}]};
+const clone=x=>JSON.parse(JSON.stringify(x));
+let data;try{data=JSON.parse(localStorage.getItem(STORE))||clone(SAMPLE);if(!Array.isArray(data.exams)||!data.rooms)throw Error('Invalid');}catch{data=clone(SAMPLE)}
+let selectedDate=demoDate,selectedGrade=data.grade||'八年級',selectedRoom=data.room||'知足班',mode='board',editRows=[],pending=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function save(){try{localStorage.setItem(STORE,JSON.stringify(data))}catch{toast('儲存失敗，可能已超出瀏覽器容量')}}
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').classList.remove('show'),3100)}
+function showMode(next){mode=next;$('boardView').classList.toggle('hidden',next!=='board');$('adminView').classList.toggle('hidden',next!=='admin');$('boardNav').classList.toggle('active',next==='board');$('adminNav').classList.toggle('active',next==='admin');if(next==='board')renderBoard();else openTab('schedule')}
+function openTab(tab){for(const x of ['schedule','seat','notice','attendance','layout','import','settings']){$('pane'+x[0].toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==tab);$('tab'+x[0].toUpperCase()+x.slice(1)).classList.toggle('active',x===tab)}if(tab==='schedule'){ $('editDate').value=selectedDate;$('editGrade').value=selectedGrade;renderAdminSchedule()}if(tab==='seat')loadSeatForm();if(tab==='notice'){$('noticesInput').value=data.notices.join('\n');syncNoticeSlider()};if(tab==='settings')loadSettings();if(tab==='attendance')initAttendanceForm();if(tab==='layout')paintLayoutControls()}
+function availableDates(){return [...new Set([...data.exams.map(x=>x.date),selectedDate])].sort()}
+function fillSelect(select,values,chosen){select.innerHTML=values.map(x=>`<option value="${esc(x)}" ${x===chosen?'selected':''}>${esc(x)}</option>`).join('')}
+function changeSelection(){selectedDate=$('viewDate').value;selectedGrade=$('viewGrade').value;renderBoard()}
+function changeRoom(){selectedRoom=$('viewRoom').value;renderBoard()}
+function clockDate(date){const days='日一二三四五六';return `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} 星期${days[date.getDay()]}`}
+function minutes(str){const m=String(str||'').match(/(\d{1,2}):(\d{2})/);return m?+m[1]*60 + +m[2]:0}
+function phase(exams,now){const t=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;let current=exams.find(x=>t>=minutes(x.start)&&t<minutes(x.end));if(current)return {exam:current,label:'考試進行中',count:'距離結束',seconds:Math.max(0,Math.ceil((minutes(current.end)-t)*60)),style:'active'};let next=exams.find(x=>minutes(x.start)>t);if(next)return{exam:next,label:'下一節考試',count:'距離開始',seconds:Math.max(0,Math.ceil((minutes(next.start)-t)*60)),style:'next'};return{exam:exams.at(-1),label:'今日考試已結束',count:'今日考程',seconds:0,style:'done'}}
+function renderBoard(){fillSelect($('viewDate'),availableDates(),selectedDate);fillSelect($('viewGrade'),grades,selectedGrade);fillSelect($('viewRoom'),Object.keys(data.rooms),selectedRoom);$('schoolTitle').textContent=data.title;$('roomTitle').textContent=selectedGrade;$('classroomTag').textContent=`🏫 ${selectedRoom}${/班$|教室$/.test(selectedRoom)?'':' 教室'}`;const exams=data.exams.filter(x=>x.date===selectedDate&&x.grade===selectedGrade).sort((a,b)=>a.start.localeCompare(b.start));const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const now=new Date();let inf;if(selectedDate===today){inf=phase(exams,now)}else{inf={exam:exams[0],label:'考程預覽',count:'依日期顯示',seconds:0,style:'preview'}}
+ $('phaseText').textContent=inf.label;$('examChip').textContent=inf.label;$('mainSubject').textContent=inf.exam?.subject||'尚未設定考程';$('mainTime').textContent=inf.exam?`${inf.exam.start} — ${inf.exam.end}`:'請到後台新增';$('examExtra').textContent=inf.exam?.note||'請依監考教師指示應試';$('countLabel').textContent=inf.count;$('countValue').textContent=inf.style==='preview'?'— — : — —':formatSeconds(inf.seconds);$('scheduleCaption').textContent=`${selectedDate} · ${selectedGrade}`;
+ $('scheduleList').innerHTML=exams.length?exams.map(x=>`<div class="exam-row ${inf.style==='active'&&inf.exam===x?'current':''}"><div class="time">${esc(x.start)}–${esc(x.end)}</div><div class="subject">${esc(x.subject)}</div><div class="pill">${inf.exam===x&&inf.style==='active'?'進行中':minutes(x.end)<now.getHours()*60+now.getMinutes()&&selectedDate===today?'已結束':'排定考試'}</div></div>`).join(''):'<div class="empty-state">此日期及年段尚無考程，請至後台新增或匯入。</div>';
+ $('noticeList').innerHTML=data.notices.map((n,i)=>`<div class="notice"><span class="bullet">${String(i+1).padStart(2,'0')}</span><span>${esc(n)}</span></div>`).join('')||'<div class="empty-state">尚未設定注意事項</div>';renderSeat();renderAttendance();applyBoardLayout();$('alert').classList.toggle('show',selectedDate!==today);$('alert').textContent=selectedDate!==today?'目前顯示非今日考程（預覽模式），倒數計時暫停。':''}
+function formatSeconds(s){s=Math.max(0,Math.floor(s));return [Math.floor(s/3600),Math.floor(s%3600/60),s%60].map(n=>String(n).padStart(2,'0')).join(':')}
+function tick(){const now=new Date();$('liveClock').textContent=now.toLocaleTimeString('zh-TW',{hour12:false,timeZone:'Asia/Taipei'});$('liveDate').textContent=clockDate(now);if(mode==='board')renderBoard()}
+function seatCells(cfg){
+ const cols=Math.max(1,Math.min(12,+cfg.cols||6)),rows=Math.max(1,Math.min(12,+cfg.rows||5));
+ const corner=cfg.corner||'front-left',fromBack=corner.startsWith('back'),fromRight=corner.endsWith('right');
+ const offset=Math.min(rows-1,Math.max(0,+cfg.offset||0));
+ const excluded=new Set(String(cfg.skip||'').split(/[;；\n]+/).map(x=>{const m=x.trim().match(/^(\d+)\s*[-,，、:]\s*(\d+)$/);return m?`${+m[1]-1},${+m[2]-1}`:null}).filter(Boolean));
+ const spots=[];
+ for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+  const logicalR=fromBack?rows-1-r:r,logicalC=fromRight?cols-1-c:c;
+  if(logicalR<offset)continue;
+  const pr=logicalR-offset;
+  if(cfg.pattern==='checker'&&(pr+logicalC)%2!==0)continue;
+  if(cfg.pattern==='alternateRows'&&pr%2!==0)continue;
+  if(cfg.pattern==='alternateCols'&&logicalC%2!==0)continue;
+  if(excluded.has(`${r},${c}`))continue;
+  spots.push({r,c,lr:pr,lc:logicalC});
+ }
+ const order=cfg.order||'row';
+ const vert=order==='column'||order==='columnSnake';
+ spots.sort((a,b)=>vert?(a.lc-b.lc||((order==='columnSnake'&&a.lc%2)?b.lr-a.lr:a.lr-b.lr)):(a.lr-b.lr||((order==='snake'&&a.lr%2)?b.lc-a.lc:a.lc-b.lc)));
+ if(cfg.reverse)spots.reverse();
+ const limit=cfg.limit===''||cfg.limit==null?spots.length:Math.max(0,+cfg.limit||0);
+ const nums=new Map(spots.slice(0,limit).map((p,i)=>[`${p.r},${p.c}`,`${cfg.prefix||''}${(+cfg.start||1)+i*(+cfg.step||1)}`]));
+ return{cols,rows,nums};
+}
+function renderSeat(){const cfg=data.rooms[selectedRoom]||data.rooms[Object.keys(data.rooms)[0]];if(!cfg)return;const {cols,rows,nums}=seatCells(cfg);$('seatGrid').style.gridTemplateColumns=`repeat(${cols},minmax(0,1fr))`;$('seatGrid').innerHTML=Array.from({length:cols*rows},(_,i)=>{const n=nums.get(`${Math.floor(i/cols)},${i%cols}`);return n==null?'<div class="seat empty">—</div>':`<div class="seat">${esc(n)}<i>座號</i></div>`}).join('');$('seatMeta').textContent=`${rows} 排 × ${cols} 欄 · 安排 ${nums.size} 席`}
+function toggleFull(){if(!document.fullscreenElement){document.documentElement.requestFullscreen?.().then(()=>document.body.classList.add('fullboard')).catch(()=>toast('瀏覽器不支援全螢幕'))}else{document.exitFullscreen?.();document.body.classList.remove('fullboard')}}document.addEventListener('fullscreenchange',()=>document.body.classList.toggle('fullboard',!!document.fullscreenElement));
+function renderAdminSchedule(){const date=$('editDate').value,grade=$('editGrade').value;editRows=clone(data.exams.filter(x=>x.date===date&&x.grade===grade).sort((a,b)=>a.start.localeCompare(b.start)));paintEditor()}
+function paintEditor(){ $('examEditor').innerHTML=editRows.length?editRows.map((e,i)=>`<tr><td><input type="time" data-i="${i}" data-f="start" value="${esc(e.start)}"></td><td><input type="time" data-i="${i}" data-f="end" value="${esc(e.end)}"></td><td><input data-i="${i}" data-f="subject" value="${esc(e.subject)}" placeholder="科目"></td><td><input data-i="${i}" data-f="note" value="${esc(e.note||'')}" placeholder="選填"></td><td><button class="btn red" onclick="removeExam(${i})">移除</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">目前沒有考程，點選「新增考試」開始編輯。</td></tr>';$('examEditor').querySelectorAll('input').forEach(x=>x.addEventListener('change',()=>{editRows[+x.dataset.i][x.dataset.f]=x.value}))}
+function addExam(){editRows.push({date:$('editDate').value,grade:$('editGrade').value,start:'08:20',end:'09:30',subject:'',note:''});paintEditor()}
+function removeExam(i){editRows.splice(i,1);paintEditor()}
+function saveExams(){const date=$('editDate').value,grade=$('editGrade').value;if(!date)return toast('請先選擇日期');if(editRows.some(e=>!e.subject.trim()||!e.start||!e.end||e.end<=e.start))return toast('請填寫科目及正確起訖時間');data.exams=data.exams.filter(x=>x.date!==date||x.grade!==grade).concat(editRows.map(e=>({...e,date,grade,subject:e.subject.trim()})));save();selectedDate=date;selectedGrade=grade;toast('考程已儲存並更新電子白板')}
+function clearDay(){if(!confirm('確定清除此日期、年段的考程嗎？'))return;editRows=[];saveExams();paintEditor()}
+function copyPreviousDay(){const date=$('editDate').value,grade=$('editGrade').value;const prev=[...new Set(data.exams.filter(x=>x.grade===grade&&x.date<date).map(x=>x.date))].sort().at(-1);if(!prev)return toast('找不到較早的同年段考程');editRows=clone(data.exams.filter(x=>x.date===prev&&x.grade===grade)).map(x=>({...x,date}));paintEditor();toast(`已載入 ${prev} 考程，請確認科目後儲存`)}
+function loadSeatForm(){const cfg=data.rooms[selectedRoom]||SAMPLE.rooms['知足班'];$('seatRoomName').value=selectedRoom;for(const x of ['cols','rows','start','order','pattern'])$('seat'+x[0].toUpperCase()+x.slice(1)).value=cfg[x];for(const [id,key,defaultValue] of [['seatCorner','corner','front-left'],['seatStep','step',1],['seatLimit','limit',''],['seatSkip','skip',''],['seatPrefix','prefix',''],['seatOffset','offset',0]])$(id).value=cfg[key]??defaultValue;$('seatReverse').checked=!!cfg.reverse;$('seatPreview').textContent=`目前預覽班級：${selectedRoom}`;previewSeats()}
+function readSeatConfig(){return {cols:+$('seatCols').value,rows:+$('seatRows').value,start:+$('seatStart').value,order:$('seatOrder').value,pattern:$('seatPattern').value,corner:$('seatCorner').value,step:+$('seatStep').value||1,limit:$('seatLimit').value===''?'':+$('seatLimit').value,skip:$('seatSkip').value.trim(),prefix:$('seatPrefix').value.trim(),offset:+$('seatOffset').value||0,reverse:$('seatReverse').checked}}
+function previewSeats(){const cfg=readSeatConfig();if(cfg.cols<1||cfg.rows<1)return;const result=seatCells(cfg);$('seatPreview').textContent=`即時預覽：${result.nums.size} 個安排座位／${cfg.cols*cfg.rows} 個位置（灰格為保留或不使用）`;$('seatMiniPreview').style.gridTemplateColumns=`repeat(${result.cols},minmax(0,1fr))`;$('seatMiniPreview').innerHTML=Array.from({length:result.cols*result.rows},(_,i)=>{const n=result.nums.get(`${Math.floor(i/result.cols)},${i%result.cols}`);return `<div class="seat ${n==null?'empty':''}">${n==null?'—':esc(n)}</div>`}).join('')}
+function saveSeats(){const room=$('seatRoomName').value.trim();if(!room)return toast('請填入班級名稱');if(room==='801'||room==='802')return toast('801、802 已停用，請選其他班級名稱');const cfg=readSeatConfig();if(cfg.cols<1||cfg.cols>12||cfg.rows<1||cfg.rows>12||cfg.start<1||cfg.step<1||cfg.offset<0||cfg.offset>=cfg.rows||cfg.limit!==''&&cfg.limit<1)return toast('請檢查行列、起始座號、編號間隔與空排設定');if(cfg.skip&&!/^([1-9]\d*\s*[-,，、:]\s*[1-9]\d*\s*[;；\n ]*)+$/.test(cfg.skip))return toast('排除位置請使用 1-2; 2-4 格式（排-欄）');if(!seatCells(cfg).nums.size)return toast('條件過多，沒有可排的座位');data.rooms[room]=cfg;selectedRoom=room;data.room=room;save();renderBoard();previewSeats();toast('座位多條件規則已儲存')}
+
+function resetSeats(){data.rooms[selectedRoom]={cols:6,rows:5,start:1,order:'row',pattern:'normal'};save();loadSeatForm();renderBoard();toast('已恢復預設座位')}
+function saveNotices(){data.notices=$('noticesInput').value.split('\n').map(x=>x.trim()).filter(Boolean);save();toast('注意事項已儲存')}
+function loadSettings(){$('settingTitle').value=data.title;$('settingGrade').value=data.grade;fillSelect($('settingRoom'),Object.keys(data.rooms),data.room)}
+function saveSettings(){data.title=$('settingTitle').value.trim()||'段考時程';data.grade=$('settingGrade').value;data.room=$('settingRoom').value;selectedGrade=data.grade;selectedRoom=data.room;save();toast('基本設定已儲存')}
+function addRoom(){const box=$('newRoomName');const room=(box?.value||'').trim();if(!room)return toast('請先輸入班級或教室名稱');if(data.rooms[room])return toast('選單已有此名稱，請直接選擇');data.rooms[room]=clone(data.rooms[selectedRoom]||SAMPLE.rooms['知足班']);selectedRoom=room;data.room=room;box.value='';save();loadSettings();renderBoard();toast('已新增「'+room+'」，可直接從教室選單選取')}
+function download(name,contents,mime){const blob=new Blob([contents],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function exportJSON(){download('exam_board_backup.json',JSON.stringify(data,null,2),'application/json;charset=utf-8')}
+function restoreJSON(evt){const file=evt.target.files?.[0];if(!file)return;file.text().then(s=>{const d=JSON.parse(s);if(!Array.isArray(d.exams)||!d.rooms||!Array.isArray(d.notices))throw Error('備份格式不符');data=d;ensureExtras();selectedGrade=d.grade;selectedRoom=d.room;selectedDate=d.exams[0]?.date||demoDate;save();loadSettings();toast('備份已還原')}).catch(e=>toast('無法還原：'+e.message));evt.target.value=''}
+function resetAll(){if(!confirm('確定清除目前瀏覽器的資料，恢復範例嗎？'))return;data=clone(SAMPLE);ensureExtras();selectedDate=demoDate;selectedGrade=data.grade;selectedRoom=data.room;save();loadSettings();toast('已還原範例資料')}
+function downloadTemplate(){const lines=['日期,年段,科目,開始時間,結束時間,備註','2026-11-17,八年級,國文,08:20,09:30,請攜帶文具','2026-11-17,八年級,英語,09:50,10:50,包含聽力'];download('exam_import_template.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8')}
+function normalizeGrade(x){const s=String(x??'').replace(/\s/g,'');if(/^高一$/.test(s))return'高一';if(/^高二$/.test(s))return'高二';if(/^高三$/.test(s))return'高三';if(/(^|[^\d])7([^\d]|$)|七|國一|一[年級]/i.test(s))return'七年級';if(/(^|[^\d])8([^\d]|$)|八|國二|二[年級]/i.test(s))return'八年級';if(/(^|[^\d])9([^\d]|$)|九|國三|三[年級]/i.test(s))return'九年級';return grades.includes(s)?s:''}
+function normDate(x){if(x instanceof Date&&!Number.isNaN(+x))return localDate(x);if(typeof x==='number'&&x>30000&&x<100000){const dt=new Date(Date.UTC(1899,11,30)+x*86400000);return dt.toISOString().slice(0,10)}let s=String(x??'').trim();let m=s.match(/(20\d{2}|1\d{2})[./年-](\d{1,2})[./月-](\d{1,2})/);if(m){let y=+m[1];if(y<1911)y+=1911;return `${y}-${String(+m[2]).padStart(2,'0')}-${String(+m[3]).padStart(2,'0')}`}m=s.match(/^(\d{1,2})[\/月.-](\d{1,2})/);if(m){let yr=selectedDate.slice(0,4);return`${yr}-${String(+m[1]).padStart(2,'0')}-${String(+m[2]).padStart(2,'0')}`}return/^\d{4}-\d\d-\d\d$/.test(s)?s:''}
+function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function normTime(v){if(typeof v==='number'&&v>=0&&v<1){let m=Math.round(v*1440);return`${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`}const s=String(v??'').trim().replace(/[：]/g,':');let m=s.match(/(\d{1,2}):(\d{2})/);if(m)return `${String(+m[1]).padStart(2,'0')}:${m[2]}`;if(/^\d{3,4}$/.test(s)){let hh=s.slice(0,-2),mm=s.slice(-2);return`${hh.padStart(2,'0')}:${mm}`}return''}
+function parseRows(rows){const items=[];let previousDate=selectedDate,previousGrade=selectedGrade;for(const row of rows){const mapped={};for(const [k,v] of Object.entries(row)){const h=String(k).replace(/[\s\u3000]/g,'').toLowerCase();if(/^(日期|考試日期|date|月日)$/.test(h))mapped.date=v;else if(/(年段|年級|grade)/.test(h))mapped.grade=v;else if(/(科目|考科|subject)/.test(h))mapped.subject=v;else if(/(開始|起始|start)/.test(h))mapped.start=v;else if(/(結束|截止|end)/.test(h))mapped.end=v;else if(/(考試時間|時間|時段|time)/.test(h))mapped.range=v;else if(/(備註|說明|note)/.test(h))mapped.note=v}let d=normDate(mapped.date)||previousDate,g=normalizeGrade(mapped.grade)||previousGrade;if(mapped.date)previousDate=d;if(mapped.grade)previousGrade=g;let start=normTime(mapped.start),end=normTime(mapped.end);if((!start||!end)&&mapped.range){const matches=String(mapped.range).match(/\d{1,2}[：:]\d{2}/g)||[];if(matches.length>=2){start=normTime(matches[0]);end=normTime(matches[1])}}const subject=String(mapped.subject??'').trim();if(subject&&start&&end&&start<end)items.push({date:d,grade:g,subject,start,end,note:String(mapped.note??'').trim()})}return items}
+function parseCSV(text){const result=[],lines=text.replace(/^\ufeff/,'').split(/\r?\n/).filter(x=>x.trim());for(let line of lines){let out=[],cur='',quoted=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'&&line[i+1]==='"'&&quoted){cur+='"';i++}else if(c==='"')quoted=!quoted;else if(c===','&&!quoted){out.push(cur);cur=''}else cur+=c}out.push(cur);result.push(out)}const header=result.shift()||[];return result.map(r=>Object.fromEntries(header.map((k,i)=>[k,r[i]||''])))}
+function loadScript(src){return new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.onload=resolve;el.onerror=()=>reject(new Error('網路套件下載失敗，請檢查網路連線'));document.head.appendChild(el)})}
+async function importFile(e){const file=e.target.files?.[0];if(!file)return;clearPreview();$('importStatus').textContent='正在讀取 '+file.name+' ...';try{let rows=[];if(/\.pdf$/i.test(file.name)||file.type==='application/pdf'){rows=await importPDF(file)}else if(/\.(png|jpe?g|webp)$/i.test(file.name)||file.type.startsWith('image/')){if(!window.Tesseract)await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');$('importStatus').textContent='正在辨識圖片中文字（首次下載語言模型可能較久）...';const res=await Tesseract.recognize(file,'chi_tra+eng',{logger:m=>{if(m.status==='recognizing text')$('importStatus').textContent=`圖片辨識中 ${Math.round(m.progress*100)}%`}});const text=res.data.text;$('ocrText').textContent=text;rows=parseOCR(text)}else if(/\.csv$/i.test(file.name)){rows=parseCSV(await file.text())}else{if(!window.XLSX)await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js');const book=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});for(const name of book.SheetNames){rows.push(...XLSX.utils.sheet_to_json(book.Sheets[name],{defval:''}))}}pending=rows.length&&rows[0]?.__layout?rows.map(({__layout,...x})=>x):parseRows(rows);paintImport();if(!/\.pdf$/i.test(file.name))$('importStatus').textContent=`檔案：${file.name}；成功辨識 ${pending.length} 筆有效考程。匯入前請核對日期、年段、科目及時間。`;else $('importStatus').textContent+=`（檔案：${file.name}）`;}catch(err){$('importStatus').textContent='讀取失敗：'+err.message}e.target.value=''}
+function parseOCR(text){const lines=text.split('\n').map(s=>s.trim()).filter(Boolean);const rows=[];let currentDate=selectedDate,currentGrade=selectedGrade;for(const line of lines){const d=normDate(line);if(/\d{1,4}[\/.-]\d{1,2}[\/.-]\d{1,2}|\d{1,2}月\d{1,2}/.test(line)&&d)currentDate=d;const g=normalizeGrade(line);if(/年級|年段|七年|八年|九年/.test(line)&&g)currentGrade=g;const times=line.match(/\d{1,2}[：:]\d{2}/g)||[];if(times.length>=2){let subject=line.replace(/\d{1,2}[：:]\d{2}/g,' ').replace(/[|｜\-–—~～至0-9\/.,，:：\s]+/g,' ').replace(/(考試|時間|科目|年級|年段)/g,'').trim();if(subject)rows.push({日期:currentDate,年段:currentGrade,科目:subject,開始時間:times[0],結束時間:times[1]})}}return rows}
+function paintImport(){$('importPreview').innerHTML=pending.length?pending.map((e,i)=>`<tr><td><input data-i="${i}" data-f="date" value="${esc(e.date)}"></td><td><select data-i="${i}" data-f="grade">${grades.map(g=>`<option ${g===e.grade?'selected':''}>${g}</option>`).join('')}</select></td><td><input data-i="${i}" data-f="subject" value="${esc(e.subject)}"></td><td><input data-i="${i}" data-f="start" value="${esc(e.start)}"></td><td><input data-i="${i}" data-f="end" value="${esc(e.end)}"></td><td><input data-i="${i}" data-f="note" value="${esc(e.note||'')}" title="分組、班級等資訊"></td><td><input data-i="${i}" data-f="selected" type="checkbox" checked></td></tr>`).join(''):'<tr><td colspan="7" class="empty-state">尚未匯入任何資料</td></tr>';$('importPreview').querySelectorAll('input,select').forEach(x=>x.addEventListener('change',()=>{const i=+x.dataset.i,f=x.dataset.f;pending[i][f]=f==='selected'?x.checked:x.value}));$('confirmImport').disabled=!pending.length}
+function clearPreview(){pending=[];$('ocrText').textContent='';$('importStatus').textContent='尚未選取檔案';paintImport()}
+function confirmImport(){const rows=pending.filter(x=>x.selected!==false);if(!rows.length)return toast('請至少選取一筆');if(rows.some(x=>!normDate(x.date)||!grades.includes(x.grade)||!x.subject.trim()||!/^\d\d:\d\d$/.test(x.start)||x.end<=x.start))return toast('請檢查日期、年段、科目、時間格式');const keys=new Set(rows.map(x=>x.date+'|'+x.grade));if(!confirm(`即將匯入 ${rows.length} 筆資料，並覆蓋涉及的 ${keys.size} 組「日期＋年段」既有考程。是否繼續？`))return;data.exams=data.exams.filter(x=>!keys.has(x.date+'|'+x.grade)).concat(rows.map(({selected,period,page,...x})=>x));selectedDate=rows[0].date;selectedGrade=rows[0].grade;save();clearPreview();toast(`已匯入 ${rows.length} 筆考程，可切換到電子白板查看`)}
+
+// ─── V1.1 modular layout, attendance, PDF extraction ───
+const CARD_DEFAULT={exam:{span:7,font:1,height:0},schedule:{span:7,font:1,height:0},seat:{span:5,font:1,height:0},notice:{span:7,font:1,height:0},attendance:{span:5,font:1,height:0}};
+const CARD_LABELS={exam:'📚 目前考試',schedule:'🗓 當日考程',seat:'🪑 座位安排',notice:'📌 注意事項',attendance:'🙋 出缺席'};
+const CARD_ORDER=['exam','seat','schedule','attendance','notice'];
+const NAMED_ROOMS=['知足班','感恩班','善解班','包容班','大愛班','合心班','協力班'];
+function ensureExtras(){
+ data.rooms??={};
+ delete data.rooms['801'];delete data.rooms['802'];
+ if(data.room==='801'||data.room==='802'||!data.rooms[data.room])data.room='知足班';
+ if(selectedRoom==='801'||selectedRoom==='802'||!data.rooms[selectedRoom])selectedRoom=data.room;
+ for(const room of NAMED_ROOMS){data.rooms[room]??=clone(SAMPLE.rooms['知足班']);}
+ data.attendance??={};data.layout??={order:[...CARD_ORDER],cards:clone(CARD_DEFAULT),clockSize:84};data.layout.cards??=clone(CARD_DEFAULT);data.layout.order??=[...CARD_ORDER];
+ for(const [k,v] of Object.entries(CARD_DEFAULT)){data.layout.cards[k]??=clone(v);data.layout.cards[k].height??=0;}
+ data.layout.clockSize??=84;data.layout.scheduleTimeScale??=1;data.layout.scheduleSubjectScale??=1;
+}
+ensureExtras();
+function attKey(date=selectedDate,grade=selectedGrade,room=selectedRoom){return [date,grade,room].join('|')}
+function attData(key=attKey()){return data.attendance[key]||{expected:0,actual:0,note:''}}
+function renderAttendance(){let a=attData();$('expectedDisplay').textContent=a.expected;$('actualDisplay').textContent=a.actual;$('absentDisplay').textContent=Math.max(0,a.expected-a.actual);$('absenceNoteDisplay').textContent=a.note?'缺席備註：'+a.note:(data.attendance[attKey()]?'缺席備註：無':'尚未登記人數，請至後台填寫')}
+function initAttendanceForm(){const date=$('attDate'),grade=$('attGrade'),room=$('attRoom');date.value=selectedDate;grade.value=selectedGrade;fillSelect(room,Object.keys(data.rooms),selectedRoom);loadAttendanceForm()}
+function loadAttendanceForm(){let a=attData(attKey($('attDate').value,$('attGrade').value,$('attRoom').value));$('attExpected').value=a.expected;$('attActual').value=a.actual;$('attNote').value=a.note||'';recalcAttendance()}
+function recalcAttendance(){let ex=Number($('attExpected').value),ac=Number($('attActual').value);$('attAbsent').value=Number.isFinite(ex)&&Number.isFinite(ac)?Math.max(0,ex-ac):''}
+function useBoardAttendance(){initAttendanceForm();toast('已帶入白板目前的日期、年段與教室')}
+function saveAttendance(){let ex=Number($('attExpected').value),ac=Number($('attActual').value);if(!Number.isInteger(ex)||!Number.isInteger(ac)||ex<0||ac<0||ex>500||ac>ex)return toast('人數格式有誤：實到不可大於應到，且應到不得超過 500');const key=attKey($('attDate').value,$('attGrade').value,$('attRoom').value);data.attendance[key]={expected:ex,actual:ac,note:$('attNote').value.trim()};save();renderAttendance();toast('出缺席資訊已儲存')}
+function applyBoardLayout(){const grid=document.querySelector('.board-grid');const order=[...new Set([...data.layout.order,...CARD_ORDER])].filter(k=>CARD_ORDER.includes(k));for(const key of order){const node=$('card'+key[0].toUpperCase()+key.slice(1));if(!node)continue;const c=data.layout.cards[key]||CARD_DEFAULT[key];node.style.setProperty('--card-span',Math.max(3,Math.min(12,+c.span||6)));node.style.setProperty('--card-font',Math.max(.6,Math.min(2.3,+c.font||1)));node.style.setProperty('--card-height',Math.max(0,Math.min(1100,+c.height||0))+'px');if(node!==grid.children[order.indexOf(key)])grid.appendChild(node)}document.documentElement.style.setProperty('--clock-size',data.layout.clockSize+'px');document.documentElement.style.setProperty('--schedule-time-font',data.layout.scheduleTimeScale);document.documentElement.style.setProperty('--schedule-subject-font',data.layout.scheduleSubjectScale)}
+let layoutEditing=false,draggingCard=null;
+function toggleLayoutEdit(){layoutEditing=!layoutEditing;const grid=document.querySelector('.board-grid');grid.classList.toggle('editing',layoutEditing);$('layoutEditBtn').textContent=layoutEditing?'✅ 完成移動':'✋ 編輯方格位置／大小';grid.querySelectorAll('.layout-card').forEach(n=>n.draggable=layoutEditing);toast(layoutEditing?'拖曳標題調整順序；拉右下角可縮放方格':'已儲存方格位置和尺寸')}
+function resetLayout(){if(!confirm('確定還原所有卡片尺寸、字體和順序嗎？'))return;data.layout={order:[...CARD_ORDER],cards:clone(CARD_DEFAULT),clockSize:84,scheduleTimeScale:1,scheduleSubjectScale:1};save();applyBoardLayout();paintLayoutControls();toast('已恢復預設排版')}
+function paintLayoutControls(){const area=$('layoutControls');if(!area)return;area.innerHTML=CARD_ORDER.map(k=>{const c=data.layout.cards[k];return `<div class="layout-item"><label>${CARD_LABELS[k]}</label><div><label>字體大小 <output id="fontLabel_${k}">${Math.round(c.font*100)}%</output></label><input type="range" min="60" max="230" step="5" value="${Math.round(c.font*100)}" oninput="setCardFont('${k}',this.value)"></div><div><label>方格寬度</label><select onchange="setCardWidth('${k}',this.value)">${[3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}" ${n===+c.span?'selected':''}>${Math.round(n/12*100)}% 寬</option>`).join('')}</select></div><div><label>最小高度 <output id="heightLabel_${k}">${c.height?c.height+'px':'自動'}</output></label><input type="range" min="0" max="900" step="25" value="${c.height||0}" oninput="setCardHeight('${k}',this.value)"></div></div>`}).join('');$('clockSize').value=data.layout.clockSize;$('clockSizeLabel').textContent=data.layout.clockSize+' px';for(const [key,id,label] of [['scheduleTimeScale','scheduleTimeSize','scheduleTimeSizeLabel'],['scheduleSubjectScale','scheduleSubjectSize','scheduleSubjectSizeLabel']]){$(id).value=Math.round(data.layout[key]*100);$(label).textContent=$(id).value+'%'}syncNoticeSlider()}
+function setCardFont(k,v){data.layout.cards[k].font=+v/100;const label=$('fontLabel_'+k);if(label)label.textContent=v+'%';if(k==='notice')syncNoticeSlider();applyBoardLayout();save()}
+function setCardWidth(k,v){data.layout.cards[k].span=+v;applyBoardLayout();save()}
+function setCardHeight(k,v){data.layout.cards[k].height=+v;$('heightLabel_'+k).textContent=+v?v+'px':'自動';applyBoardLayout();save()}
+function setClockSize(v){data.layout.clockSize=+v;$('clockSizeLabel').textContent=v+' px';applyBoardLayout();save()}
+function saveLayoutControls(){save();toast('字體及方格大小已儲存')}
+function syncNoticeSlider(){const el=$('noticeFontQuick');if(!el)return;el.value=Math.round(data.layout.cards.notice.font*100);$('noticeFontQuickLabel').textContent=el.value+'%'}
+function setScheduleFont(which,value){const key=which==='time'?'scheduleTimeScale':'scheduleSubjectScale';data.layout[key]=Math.max(.75,Math.min(2,Number(value)/100));const label=$(which==='time'?'scheduleTimeSizeLabel':'scheduleSubjectSizeLabel');if(label)label.textContent=value+'%';applyBoardLayout();save()}
+document.querySelectorAll('.layout-card').forEach(n=>{n.addEventListener('dragstart',e=>{if(!layoutEditing){e.preventDefault();return}draggingCard=n.dataset.card;n.classList.add('dragging');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',draggingCard)});n.addEventListener('dragend',()=>{document.querySelectorAll('.layout-card').forEach(x=>x.classList.remove('dragging','drop-target'));draggingCard=null});n.addEventListener('dragover',e=>{if(layoutEditing&&draggingCard&&n.dataset.card!==draggingCard){e.preventDefault();n.classList.add('drop-target')}});n.addEventListener('dragleave',()=>n.classList.remove('drop-target'));n.addEventListener('drop',e=>{e.preventDefault();n.classList.remove('drop-target');if(!draggingCard||draggingCard===n.dataset.card)return;let order=[...data.layout.order],a=order.indexOf(draggingCard),b=order.indexOf(n.dataset.card);if(a>=0&&b>=0){order.splice(a,1);order.splice(b,0,draggingCard);data.layout.order=order;save();applyBoardLayout()}})});
+// V1.4 Resize: paired cards trade grid-columns; cards below auto-reflow.
+let activeResize=null;
+const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+function cardRowPartner(card){
+ const grid=document.querySelector('.board-grid');const rect=card.getBoundingClientRect();
+ return [...grid.querySelectorAll('.layout-card')].find(n=>n!==card && Math.abs(n.getBoundingClientRect().top-rect.top)<8)||null;
+}
+function beginResize(e){
+ if(!layoutEditing)return;
+ e.preventDefault();e.stopPropagation();
+ const handle=e.currentTarget, card=handle.closest('.layout-card'), key=card.dataset.card;
+ const grid=document.querySelector('.board-grid');const partner=window.innerWidth>900?cardRowPartner(card):null;
+ const span=+data.layout.cards[key].span;const pspan=partner?+data.layout.cards[partner.dataset.card].span:0;
+ const metrics=grid.getBoundingClientRect();const style=getComputedStyle(grid),gap=parseFloat(style.columnGap)||16;
+ const colWidth=(metrics.width-gap*11)/12+gap;
+ activeResize={key,card,partner,span,pspan,x:e.clientX,y:e.clientY,height:card.getBoundingClientRect().height,colWidth,moved:false};
+ card.classList.add('resizing');handle.setPointerCapture(e.pointerId);
+}
+function moveResize(e){
+ if(!activeResize)return;
+ const a=activeResize, dx=e.clientX-a.x,dy=e.clientY-a.y;
+ if(Math.abs(dx)>3||Math.abs(dy)>3)a.moved=true;
+ if(!a.moved)return;
+ let newSpan=clamp(a.span+Math.round(dx/a.colWidth),3,12);
+ if(a.partner){const total=a.span+a.pspan;newSpan=clamp(newSpan,Math.max(3,total-12),Math.min(12,total-3));data.layout.cards[a.partner.dataset.card].span=total-newSpan;}
+ data.layout.cards[a.key].span=newSpan;
+ // Height sets minimum only, to avoid hiding text inside the resized card.
+ data.layout.cards[a.key].height=clamp(Math.round((a.height+dy)/10)*10,0,1100);
+ applyBoardLayout();
+}
+function endResize(e){
+ if(!activeResize)return;
+ activeResize.card.classList.remove('resizing');
+ activeResize=null;save();
+ toast('方格尺寸已儲存；其他方格會自動重新排列');
+}
+document.querySelectorAll('.resize-grip').forEach(h=>{
+ h.addEventListener('pointerdown',beginResize);
+ h.addEventListener('pointermove',moveResize);
+ h.addEventListener('pointerup',endResize);
+ h.addEventListener('pointercancel',endResize);
+ h.addEventListener('dragstart',e=>e.preventDefault());
+});
+// PDF V1.2: geometry-aware timetable parsing for 6 periods and grouped grades.
+function mergePDFLines(items){
+ const lines=[];
+ for(const item of items){
+  const s=String(item.str||'').trim();if(!s)continue;
+  let row=lines.find(l=>Math.abs(l.y-item.transform[5])<3.5);
+  if(!row){row={y:item.transform[5],tokens:[]};lines.push(row)}
+  row.tokens.push({x:item.transform[4],s});
+ }
+ for(const row of lines){row.tokens.sort((a,b)=>a.x-b.x);row.text=row.tokens.map(t=>t.s).join('').replace(/\s+/g,' ')}
+ return lines.sort((a,b)=>a.y-b.y);
+}
+function parsePDFLayout(items,pageNumber){
+ const lines=mergePDFLines(items);
+ const fullText=lines.map(l=>l.text).join('\n');
+ const pageGrades=/(高中部|高一|高二|高三)/.test(fullText)?['高一','高二','高三']:['國一','國二','國三'];
+ const dateLines=lines.filter(l=>/(?:1\d{2}|20\d{2})\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日/.test(l.text)&&/日期/.test(l.text)||/(?:1\d{2}|20\d{2})\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日/.test(l.text)&&l.tokens.some(t=>t.x>300));
+ const results=[],diagnostics=[];
+ if(!dateLines.length)return {rows:[],diagnostics:['此頁找不到民國年日期表頭'],text:fullText};
+ // Each six-period block contains its own time rows and three grade rows.
+ for(let di=0;di<dateLines.length;di++){
+  const dateLine=dateLines[di],upper=dateLine.y-3,lower=di+1<dateLines.length?dateLines[di+1].y-3:Infinity;
+  const section=lines.filter(l=>l.y>=upper&&l.y<lower);
+  const dateMatch=dateLine.text.match(/(1\d{2}|20\d{2})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+  if(!dateMatch)continue;
+  const year=+dateMatch[1]<1911?+dateMatch[1]+1911:+dateMatch[1];
+  const date=`${year}-${String(+dateMatch[2]).padStart(2,'0')}-${String(+dateMatch[3]).padStart(2,'0')}`;
+  const groupIndex=x=>x<115||x>842?-1:Math.min(5,Math.floor((x-115)/115.55));
+  const gradeRows=[];
+  for(const line of section)for(const t of line.tokens){
+   if(t.x>112)continue;
+   const compact=t.s.replace(/\s/g,'');
+   if(pageGrades.includes(compact))gradeRows.push({grade:compact,y:line.y});
+  }
+  gradeRows.sort((a,b)=>a.y-b.y);
+  if(gradeRows.length!==3){diagnostics.push(`${date} 年級列數 ${gradeRows.length}，請人工檢查`);continue}
+  const times=Array.from({length:6},()=>[]);
+  for(const line of section){
+   if(line.y>=gradeRows[0].y-13)continue; // only header rows above first student row
+   const cellPieces=Array.from({length:6},()=>[]);
+   for(const t of line.tokens){const col=groupIndex(t.x);if(col>=0)cellPieces[col].push(t.s)}
+   for(let col=0;col<6;col++){
+    const matches=cellPieces[col].join('').match(/\d{1,2}\s*[：:]\s*\d{2}/g)||[];
+    for(const m of matches){const time=normTime(m.replace(/\s/g,''));if(time&&!times[col].some(x=>x.value===time))times[col].push({value:time,y:line.y})}
+   }
+  }
+  const ranges=times.map((arr,i)=>{
+    arr.sort((a,b)=>a.y-b.y);const vals=arr.map(x=>x.value);
+    if(vals.length!==2){diagnostics.push(`${date} 第${i+1}節時間擷取 ${vals.length} 筆，請核對`);return null}
+    return {start:vals[0],end:vals[1]};
+  });
+  for(let ri=0;ri<gradeRows.length;ri++){
+   const g=gradeRows[ri],previous=gradeRows[ri-1],next=gradeRows[ri+1];
+   const yTop=previous?(previous.y+g.y)/2:g.y-18;
+   const yBottom=next?(next.y+g.y)/2:g.y+18;
+   const byCol=Array.from({length:6},()=>[]);
+   for(const line of section){
+    if(line.y<yTop||line.y>yBottom)continue;
+    for(const token of line.tokens){const col=groupIndex(token.x);if(col<0)continue;
+     const s=token.s.trim();if(!s||/^\d{1,2}[：:]\d{2}$/.test(s))continue;
+     byCol[col].push({y:line.y,x:token.x,s});
+    }
+   }
+   const grade={'國一':'七年級','國二':'八年級','國三':'九年級','高一':'高一','高二':'高二','高三':'高三'}[g.grade];
+   for(let c=0;c<6;c++){
+    if(!ranges[c])continue;
+    const fragments=byCol[c].sort((a,b)=>a.y-b.y||a.x-b.x);
+    const parts=[];for(const fragment of fragments){
+      const previous=parts.at(-1);
+      if(previous&&Math.abs(previous.y-fragment.y)<3.5)previous.s+=fragment.s;
+      else parts.push({y:fragment.y,s:fragment.s});
+    }
+    let subject=parts.map(p=>p.s).join('／').replace(/／+/g,'／').trim();
+    if(!subject){diagnostics.push(`${date} ${grade} 第${c+1}節空白，未自動匯入`);continue}
+    // Retain class codes as a separate note and keep the label readable on the board.
+    let note='';
+    if(/S\d{2}/.test(subject))note='分班考科：'+subject;
+    if(/全校打掃/.test(subject))note='非考試時段';
+    results.push({__layout:true,date,grade,subject,start:ranges[c].start,end:ranges[c].end,note,period:c+1,page:pageNumber});
+   }
+  }
+ }
+ return {rows:results,diagnostics,text:fullText};
+}
+async function importPDF(file){
+ $('importStatus').textContent='正在依 PDF 表格位置解析日期、年級、節次…';
+ if(!window.pdfjsLib)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+ const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+ let detail='',rows=[],errors=[];let pageLimit=Math.min(pdf.numPages,12);
+ for(let i=1;i<=pageLimit;i++){
+  const page=await pdf.getPage(i),content=await page.getTextContent();
+  const positioned=content.items.map(t=>({...t,transform:[...t.transform.slice(0,5),page.view[3]-t.transform[5]]}));
+  let parsed=parsePDFLayout(positioned,i);
+  detail+=`【第 ${i} 頁】\n`+parsed.text+'\n';
+  rows.push(...parsed.rows);errors.push(...parsed.diagnostics);
+  if(!parsed.rows.length&&parsed.text.replace(/\s/g,'').length<24){
+   $('importStatus').textContent=`第 ${i} 頁為掃描影像：嘗試 OCR（可能需要手動校正）…`;
+   if(!window.Tesseract)await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+   const viewport=page.getViewport({scale:2.5}),canvas=document.createElement('canvas');canvas.width=viewport.width;canvas.height=viewport.height;
+   await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+   const recognized=await Tesseract.recognize(canvas,'chi_tra+eng');
+   detail+='【掃描頁 OCR】\n'+recognized.data.text+'\n';
+   const fallback=parseRows(parseOCR(recognized.data.text));
+   rows.push(...fallback.map(x=>({...x,__layout:true,page:i})));
+   errors.push(`第 ${i} 頁為掃描頁，僅能試行 OCR；請逐筆核對`);
+  }else if(!parsed.rows.length){errors.push(`第 ${i} 頁未辨識到六節制考程，保留原文以供檢查`)}
+ }
+ $('ocrText').textContent=detail+'\n【解析警示】\n'+(errors.join('\n')||'無');
+ $('importStatus').textContent=`PDF 共解析 ${rows.length} 筆，日期／年級／節次依表格座標配對。${errors.length?'需注意：'+errors.slice(0,4).join('；'):'未發現明顯結構異常。'} 請核對後按「確認匯入」。`;
+ return rows;
+}
+
+// ── V1.7 consolidated seating, conditional solver and attendance ──
+data.roster??=[]; data.roomKinds??={}; data.seatPlans??={}; data.studentStates??={};data.planWarnings??={};
+const studentId=()=>`S${Date.now().toString(36)}${Math.random().toString(36).slice(2,9)}`;
+const roomRoster=(room=selectedRoom)=>data.roster.filter(s=>s.room===room);
+const planFor=(room=selectedRoom)=>data.seatPlans[room]??={};
+const keyStudentStatus=(student)=>`${attKey()}|${student.id}`;
+const getStatus=(student)=>data.studentStates[keyStudentStatus(student)]||'present';
+const statusLabels={present:'✅ 到考',absent:'❌ 缺席',late:'⏰ 遲到',leave:'📝 請假'};
+const statuses=Object.keys(statusLabels);
+const customRoomLabel=room=>data.roomKinds[room]==='makeup'?'補考考場':data.roomKinds[room]==='support'?'特殊安排考場':'額外考場';
+function hashSeed(str){let h=2166136261;for(const ch of String(str)){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function seededShuffle(a,seed){let x=hashSeed(seed)||1;const r=()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return (x>>>0)/4294967296};a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function orderedStudents(roster,strategy='round',seed='115'){
+ const sorted=[...roster].sort((a,b)=>String(a.className).localeCompare(String(b.className),'zh-Hant')||String(a.number).localeCompare(String(b.number),'zh-Hant',{numeric:true}));
+ if(strategy==='ordered')return sorted;
+ if(strategy==='shuffle')return seededShuffle(sorted,seed);
+ let groups=Object.groupBy?Object.groupBy(sorted,x=>x.className):sorted.reduce((a,x)=>(a[x.className]??=[]).push(x),{});
+ const keys=Object.keys(groups).sort(),res=[];while(keys.some(k=>groups[k].length))for(const k of keys){if(groups[k].length)res.push(groups[k].shift())}return res;
+}
+function rowCfg(room){return data.rooms[room]||data.rooms['知足班']}
+function seatsFor(room){const cfg=rowCfg(room);if(!cfg)return [];const cells=seatCells(cfg);return Array.from(cells.nums.keys())}
+function rulesOf(s){return s.rules||{}}
+function frontBackOK(s,spot,rows){const rule=rulesOf(s),[r,c]=spot.split(',').map(Number);if(rule.fixedRow&&+rule.fixedRow!==r+1)return false;if(rule.fixedCol&&+rule.fixedCol!==c+1)return false;const zone=Math.max(1,Math.ceil(rows/3));if(rule.zone==='front'&&r>=zone)return false;if(rule.zone==='back'&&r<rows-zone)return false;return true}
+function pairOK(a,pa,b,pb){if(!a||!b)return true;const A=rulesOf(a),B=rulesOf(b),[ra,ca]=pa.split(',').map(Number),[rb,cb]=pb.split(',').map(Number),dr=Math.abs(ra-rb),dc=Math.abs(ca-cb),near=dr+dc===1,nine=dr<=1&&dc<=1;
+ if(near&&(A.noNeighbor||B.noNeighbor))return false;
+ if(nine&&(A.noNine||B.noNine))return false;
+ const avoid=Array.isArray(A.avoid)?A.avoid:[],avoidB=Array.isArray(B.avoid)?B.avoid:[];
+ if((avoid.includes(b.id)||avoidB.includes(a.id))&&nine&&(A.avoidNine||B.avoidNine))return false;
+ if((avoid.includes(b.id)||avoidB.includes(a.id))&&near)return false;
+ return true;
+}
+function validatePlan(room,plan){let roster=roomRoster(room),ids=new Set(roster.map(s=>s.id)),allowed=new Set(seatsFor(room)),rows=+rowCfg(room).rows||5,violations=[];
+ const pairs=Object.entries(plan).filter(([pos,id])=>id).map(([pos,id])=>({pos,s:roster.find(x=>x.id===id)}));
+ for(const p of pairs){if(!allowed.has(p.pos))violations.push('座位不在可使用位置');if(!ids.has(p.s?.id))violations.push('學生不在此考場名冊');else if(!frontBackOK(p.s,p.pos,rows))violations.push(`${p.s.name} 不符合前後排／固定位置限制`)}
+ if(new Set(pairs.map(p=>p.s?.id)).size!==pairs.length)violations.push('學生重複安排');
+ for(let i=0;i<pairs.length;i++)for(let j=i+1;j<pairs.length;j++)if(!pairOK(pairs[i].s,pairs[i].pos,pairs[j].s,pairs[j].pos))violations.push(`${pairs[i].s.name} 和 ${pairs[j].s.name} 位置衝突`);
+ return [...new Set(violations)];
+}
+function solveSeats(room,students,opts){const allSpots=seatsFor(room),rows=+rowCfg(room).rows||5;
+ let ordered=orderedStudents(students,opts.strategy,opts.seed);const difficulty=s=>(rulesOf(s).fixedRow?20:0)+(rulesOf(s).fixedCol?20:0)+(rulesOf(s).noNine?15:0)+(rulesOf(s).noNeighbor?10:0)+(rulesOf(s).avoidNine?5:0)+(rulesOf(s).zone&&rulesOf(s).zone!=='any'?7:0)+(rulesOf(s).avoid?.length||0);
+ ordered=ordered.map((s,i)=>({s,i})).sort((a,b)=>difficulty(b.s)-difficulty(a.s)||a.i-b.i).map(x=>x.s);
+ let result={},occupied=new Map(),limit=0,best={},bestN=0;
+ const budget=120000;
+ function visit(idx){if(occupied.size>bestN){bestN=occupied.size;best=Object.fromEntries(occupied)}if(idx>=ordered.length)return true;if(++limit>budget)return false;
+  const s=ordered[idx];const options=allSpots.filter(pos=>frontBackOK(s,pos,rows)&&!occupied.has(pos));
+  for(const pos of options){let ok=true;for(const [q,id] of occupied){const other=students.find(x=>x.id===id);if(!pairOK(s,pos,other,q)){ok=false;break}}if(!ok)continue;occupied.set(pos,s.id);if(visit(idx+1))return true;occupied.delete(pos)}return false;
+ }
+ const success=visit(0);result=success?Object.fromEntries(occupied):best;
+ const assigned=new Set(Object.values(result));let unassigned=ordered.filter(s=>!assigned.has(s.id));
+ return {plan:result,unassigned,checks:limit,exhausted:limit>budget};
+}
+function runSeatPlan(){const room=$('seatRoomName').value.trim()||selectedRoom;if(room!==selectedRoom){toast('請先儲存並切換至要安排的考場');return}
+ const cfg=readSeatConfig();if(cfg.cols<1||cfg.cols>12||cfg.rows<1||cfg.rows>12){toast('請先設定有效座位排數和欄數');return}
+ data.rooms[room]=cfg;const roster=roomRoster(room);if(!roster.length){toast('請先匯入或新增學生名冊');return}
+ const opts={strategy:$('mixedStrategy').value,seed:$('seatSeed').value};data.planOptions??={};data.planOptions[room]=opts;
+ const solved=solveSeats(room,roster,opts);data.seatPlans[room]=solved.plan;data.planWarnings[room]=solved.unassigned.map(s=>`${s.className} ${s.number} ${s.name}`);
+ save();paintSeatCenter();renderBoard();const message=solved.unassigned.length?`有 ${solved.unassigned.length} 位未排入；請調整條件或座位數`: `成功安排 ${roster.length} 位學生`;
+ toast(message);$('planWarnings').style.display=solved.unassigned.length?'block':'none';
+}
+function paintSeatCells(container,room,mini=false){const cfg=rowCfg(room),cells=seatCells(cfg),plan=planFor(room),roster=roomRoster(room),reverse=new Map(roster.map(s=>[s.id,s]));
+ container.style.gridTemplateColumns=`repeat(${cells.cols},minmax(0,1fr))`;
+ container.innerHTML=Array.from({length:cells.rows*cells.cols},(_,i)=>{
+  const pos=`${Math.floor(i/cells.cols)},${i%cells.cols}`,num=cells.nums.get(pos),s=reverse.get(plan[pos]);
+  if(s){const status=getStatus(s);return `<div class="seat student" draggable="true" role="button" tabindex="0" data-pos="${pos}" data-status="${status}" title="${esc(s.className)} ${esc(s.number)} ${esc(s.name)}：${statusLabels[status]}。點擊切換出缺席，拖曳交換座位"><strong>${esc(s.name)}</strong><span class="student-class">${esc(s.className)} ${esc(s.number)}</span><span class="student-status">${statusLabels[status]}</span></div>`}
+  if(!num)return `<div class="seat empty seat-empty-small" data-pos="${pos}">—</div>`;
+  return `<div class="seat empty seat-empty-small" data-pos="${pos}" title="空位，可拖入學生">空</div>`;
+ }).join('');
+ container.dataset.room=room;
+}
+let seatDragActive=false,dragStart=null,dragMoved=false;
+function attachSeatEvents(container){if(container.dataset.events)return;container.dataset.events='1';
+ const start=el=>{dragStart={room:container.dataset.room,pos:el.dataset.pos};dragMoved=false;seatDragActive=true;};
+ container.addEventListener('dragstart',e=>{const el=e.target.closest('.seat.student');if(!el)return;e.dataTransfer.setData('text/plain',el.dataset.pos);e.dataTransfer.effectAllowed='move';start(el)});
+ container.addEventListener('dragover',e=>{if(e.target.closest('.seat[data-pos]'))e.preventDefault()});
+ container.addEventListener('drop',e=>{const el=e.target.closest('.seat[data-pos]');if(el&&dragStart){e.preventDefault();dragMoved=true;swapSeat(dragStart.room,dragStart.pos,el.dataset.pos)}seatDragActive=false;dragStart=null;});
+ container.addEventListener('dragend',()=>{seatDragActive=false;dragStart=null});
+ container.addEventListener('click',e=>{const el=e.target.closest('.seat.student');if(!el||dragMoved){dragMoved=false;return}if(container.id==='seatGrid')toggleStudentStatus(el.dataset.pos,container.dataset.room);else toast('座位編排預覽：請在電子白板點擊切換出缺席')});
+ container.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.seat.student')){e.preventDefault();if(container.id==='seatGrid')toggleStudentStatus(e.target.dataset.pos,container.dataset.room)}});
+ // Pointer fallback supports touch displays: long-distance move to another cell swaps students, tap toggles status.
+ let origin=null;
+ container.addEventListener('pointerdown',e=>{const el=e.target.closest('.seat.student');if(!el)return;origin={pos:el.dataset.pos,x:e.clientX,y:e.clientY,room:container.dataset.room};seatDragActive=true},{passive:true});
+ container.addEventListener('pointerup',e=>{if(!origin)return;const originCopy=origin;origin=null;seatDragActive=false;if(dragMoved)return;if(Math.hypot(e.clientX-originCopy.x,e.clientY-originCopy.y)<18)return;const target=document.elementFromPoint(e.clientX,e.clientY)?.closest('.seat[data-pos]');if(target){dragMoved=true;swapSeat(originCopy.room,originCopy.pos,target.dataset.pos)}},{passive:true});
+ container.addEventListener('pointercancel',()=>{origin=null;seatDragActive=false});
+}
+function swapSeat(room,source,dest){if(source===dest)return;if(!data.seatPlans[room])return;const plan={...planFor(room)},id=plan[source],other=plan[dest];if(!id)return;const cfg=rowCfg(room),available=new Set(seatsFor(room));if(!available.has(dest)){toast('此位置為禁用或保留座位，無法交換');return}
+ if(other)plan[source]=other;else delete plan[source];plan[dest]=id;
+ const errors=validatePlan(room,plan);if(errors.length){toast('交換被限制阻擋：'+errors[0]);return}
+ data.seatPlans[room]=plan;save();renderBoard();if($('seatMiniPreview'))paintSeatCenter();toast('座位已交換並儲存')}
+function toggleStudentStatus(pos,room){const id=planFor(room)[pos],s=data.roster.find(x=>x.id===id);if(!s)return;const key=keyStudentStatus(s),next=statuses[(statuses.indexOf(getStatus(s))+1)%statuses.length];data.studentStates[key]=next;syncRosterAttendance(room);save();renderBoard();toast(`${s.className} ${s.name}：${statusLabels[next]}`)}
+function syncRosterAttendance(room=selectedRoom){const roster=roomRoster(room),actual=roster.filter(x=>['present','late'].includes(getStatus(x))).length;
+ data.attendance[attKey(selectedDate,selectedGrade,room)]={expected:roster.length,actual,note:roster.filter(x=>['absent','leave'].includes(getStatus(x))).map(s=>`${s.className} ${s.number}：${getStatus(s)==='leave'?'請假':'缺席'}`).join('；')};}
+const priorRenderSeat=renderSeat;
+renderSeat=function(){const roster=roomRoster();if(!roster.length){priorRenderSeat();$('seatStatusHint').textContent='尚未匯入此考場名冊，顯示預設座號。';return}
+ paintSeatCells($('seatGrid'),selectedRoom);attachSeatEvents($('seatGrid'));
+ $('seatMeta').textContent=`${rowCfg(selectedRoom).rows} 排 × ${rowCfg(selectedRoom).cols} 欄 · ${Object.keys(planFor()).length}/${roster.length} 人已排`; $('seatStatusHint').textContent='點擊學生座位切換到考／缺席／遲到／請假；拖曳可交換（自動檢查限制）。';};
+const priorRenderAttendance=renderAttendance;
+renderAttendance=function(){if(roomRoster().length){const roster=roomRoster(),actual=roster.filter(s=>['present','late'].includes(getStatus(s))).length,abs=roster.length-actual;
+ $('expectedDisplay').textContent=roster.length;$('actualDisplay').textContent=actual;$('absentDisplay').textContent=abs;
+ $('absenceNoteDisplay').textContent=abs?'未到：'+roster.filter(s=>!['present','late'].includes(getStatus(s))).map(s=>`${s.className} ${s.number}（${getStatus(s)==='leave'?'請假':'缺席'}）`).join('、'):'✅ 全員到考';return}
+ priorRenderAttendance()};
+// Guard constant rerender while dragging the seat tiles.
+const oldTick=tick;
+tick=function(){if(seatDragActive){const now=new Date();$('liveClock').textContent=now.toLocaleTimeString('zh-TW',{hour12:false,timeZone:'Asia/Taipei'});$('liveDate').textContent=clockDate(now);return}oldTick()};
+const priorLoadSeatForm=loadSeatForm;
+loadSeatForm=function(){priorLoadSeatForm();paintSeatCenter()};
+const priorPreviewSeats=previewSeats;
+previewSeats=function(){if(!$('seatMiniPreview'))return;priorPreviewSeats();if(roomRoster().length&&Object.keys(planFor()).length){paintSeatCells($('seatMiniPreview'),selectedRoom,true);attachSeatEvents($('seatMiniPreview'))}};
+const priorSaveSeats=saveSeats;
+saveSeats=function(){const old=selectedRoom;priorSaveSeats();if(roomRoster().length){data.seatPlans[selectedRoom]={};data.planWarnings[selectedRoom]=[];save();paintSeatCenter();renderBoard();toast('座位規則已儲存，請重新按「智慧編排」以套用新條件')}};
+function paintSeatCenter(){if(!$('rosterRows'))return;
+ const roster=roomRoster();$('rosterSummary').textContent=`目前考場「${selectedRoom}」：${roster.length} 人；全部名冊 ${data.roster.length} 人。`;
+ fillSelect($('ruleStudent'),roster.map(s=>s.id),$('ruleStudent').value||roster[0]?.id);
+ $('ruleStudent').innerHTML=roster.map(s=>`<option value="${esc(s.id)}">${esc(s.className)} ${esc(s.number)} ${esc(s.name)}</option>`).join('');
+ $('rosterRows').innerHTML=data.roster.map((s,i)=>`<tr><td>${i+1}</td><td><input type="text" value="${esc(s.className)}" onchange="changeStudent('${esc(s.id)}','className',this.value)"></td><td><input class="short" type="text" value="${esc(s.number)}" onchange="changeStudent('${esc(s.id)}','number',this.value)"></td><td><input type="text" value="${esc(s.name)}" onchange="changeStudent('${esc(s.id)}','name',this.value)"></td><td><select onchange="changeStudent('${esc(s.id)}','room',this.value)">${Object.keys(data.rooms).map(r=>`<option value="${esc(r)}" ${r===s.room?'selected':''}>${esc(r)}</option>`).join('')}</select></td><td>${esc(statusLabels[getStatus(s)])}</td><td><button class="btn red" onclick="deleteStudent('${esc(s.id)}')">刪除</button></td></tr>`).join('')||'<tr><td colspan="7">尚無名冊，請上傳 CSV / Excel 或載入示範名冊</td></tr>';
+ $('extraRoomList').innerHTML=Object.entries(data.roomKinds).map(([room,kind])=>`<span class="room-pill">${esc(room)}｜${esc(customRoomLabel(room))}</span>`).join('　')||'尚未建立額外考場。';
+ const warning=data.planWarnings[selectedRoom]||[];$('planWarnings').style.display=warning.length?'block':'none';$('planWarnings').textContent=warning.length?`⚠ 無法排入的學生（${warning.length}）：\n${warning.join('、')}\n請增加座位或放寬條件後重新編排。`:'';
+ showStudentRules();
+ if(Object.keys(planFor()).length){paintSeatCells($('seatMiniPreview'),selectedRoom,true);attachSeatEvents($('seatMiniPreview'))}
+}
+function changeStudent(id,field,val){const s=data.roster.find(x=>x.id===id);if(!s)return;if(field==='room'&&!data.rooms[val])return;s[field]=val;data.seatPlans={};save();paintSeatCenter();renderBoard()}
+function deleteStudent(id){if(!confirm('確定刪除此學生？'))return;data.roster=data.roster.filter(s=>s.id!==id);data.seatPlans={};save();paintSeatCenter();renderBoard()}
+function addStudentRow(){data.roster.push({id:studentId(),className:selectedGrade,number:String(roomRoster().length+1),name:'新同學',room:selectedRoom,rules:{}});save();paintSeatCenter()}
+function moveRosterToRoom(){if(!confirm(`確定將全部 ${data.roster.length} 位學生都分派到「${selectedRoom}」？`))return;for(const s of data.roster)s.room=selectedRoom;data.seatPlans={};save();paintSeatCenter();renderBoard()}
+function clearCurrentRoomRoster(){if(!confirm(`確定刪除「${selectedRoom}」考場全部名冊？`))return;data.roster=data.roster.filter(s=>s.room!==selectedRoom);delete data.seatPlans[selectedRoom];save();paintSeatCenter();renderBoard()}
+function clearSeatOverrides(){delete data.seatPlans[selectedRoom];delete data.planWarnings[selectedRoom];save();previewSeats();paintSeatCenter();renderBoard();toast('已清除手動與自動排位，請重新編排')}
+function addExtraExamRoom(){const name=$('extraRoomName').value.trim();if(!name)return toast('請填寫額外考場名稱');if(data.rooms[name])return toast('教室名稱已存在');data.rooms[name]=clone(rowCfg(selectedRoom));data.roomKinds[name]=$('extraRoomKind').value;selectedRoom=name;data.room=name;save();$('extraRoomName').value='';loadSeatForm();renderBoard();toast('已建立額外考場「'+name+'」')}
+function rulesDefault(){return {zone:'any',fixedRow:'',fixedCol:'',avoid:[],noNeighbor:false,noNine:false,avoidNine:false}}
+function showStudentRules(){const id=$('ruleStudent').value,s=data.roster.find(x=>x.id===id),r={...rulesDefault(),...(s?.rules||{})};$('ruleZone').value=r.zone;$('ruleRow').value=r.fixedRow||'';$('ruleCol').value=r.fixedCol||'';$('ruleNoNeighbor').checked=!!r.noNeighbor;$('ruleNoNine').checked=!!r.noNine;$('ruleAvoidNine').checked=!!r.avoidNine;
+ $('ruleAvoid').innerHTML=roomRoster().filter(x=>x.id!==id).map(x=>`<option value="${esc(x.id)}" ${(r.avoid||[]).includes(x.id)?'selected':''}>${esc(x.className)} ${esc(x.number)} ${esc(x.name)}</option>`).join('')}
+function saveStudentRules(){const id=$('ruleStudent').value,s=data.roster.find(x=>x.id===id);if(!s)return toast('請先新增學生');const row=$('ruleRow').value,col=$('ruleCol').value,cfg=rowCfg(selectedRoom);
+ if((row&&!col)||(!row&&col))return toast('固定位置需同時指定排與欄');if(row&&(+row<1||+row>cfg.rows||+col<1||+col>cfg.cols))return toast('固定座位超出教室行列範圍');
+ s.rules={zone:$('ruleZone').value,fixedRow:row?+row:'',fixedCol:col?+col:'',noNeighbor:$('ruleNoNeighbor').checked,noNine:$('ruleNoNine').checked,avoidNine:$('ruleAvoidNine').checked,avoid:[...$('ruleAvoid').selectedOptions].map(x=>x.value)};
+ delete data.seatPlans[selectedRoom];save();paintSeatCenter();renderBoard();toast('學生限制已儲存，請重新智慧編排')}
+function deleteStudentRules(){const s=data.roster.find(x=>x.id===$('ruleStudent').value);if(!s)return;s.rules={};delete data.seatPlans[selectedRoom];save();paintSeatCenter();toast('已移除限制，請重新編排')}
+function downloadRosterTemplate(){download('student_roster_template.csv','\uFEFF班級,座號,姓名,考場\n八年一班,1,學生甲,知足班\n八年二班,2,學生乙,知足班\n八年一班,3,學生丙,額外考場A\n','text/csv;charset=utf-8')}
+function addDemoRoster(){if(data.roster.length&&!confirm('載入示範名冊會增加 18 位虛構學生，是否繼續？'))return;const surnames=['林','陳','王','李','張','吳','劉','蔡','楊','許','鄭','謝','洪','郭','曾','葉','黃','周'];for(let i=0;i<18;i++)data.roster.push({id:studentId(),className:i%2?'八年二班':'八年一班',number:String(Math.floor(i/2)+1).padStart(2,'0'),name:`${surnames[i]}同學${i+1}`,room:selectedRoom,rules:{}});save();paintSeatCenter();toast('已新增 18 筆虛構示範名冊')}
+function normRosterRow(r){let src={};for(const [k,v] of Object.entries(r))src[k.trim().replace(/\s/g,'')]=String(v??'').trim();const grab=(...keys)=>keys.map(k=>src[k]).find(v=>v!=null&&v!=='')||'';return {className:grab('班級','原班級','班別','Class','class'),number:grab('座號','號碼','seat','Seat','座位號碼'),name:grab('姓名','學生姓名','名字','Name','name'),room:grab('考場','教室','分派考場')||selectedRoom}}
+async function importRoster(event){const file=event.target.files?.[0];if(!file)return;try{let rows=[];if(/\.csv$/i.test(file.name)){let text=await file.text();const matrix=parseCsvMatrix(text.replace(/^\uFEFF/,''));const head=matrix.shift().map(x=>String(x).trim());rows=matrix.filter(x=>x.some(v=>String(v).trim())).map(row=>Object.fromEntries(head.map((h,i)=>[h,row[i]??''])))}else{if(!window.XLSX)await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js');const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});for(const sh of wb.SheetNames)rows.push(...XLSX.utils.sheet_to_json(wb.Sheets[sh],{defval:'',raw:false}))}
+ const normalized=rows.map(normRosterRow);const valid=normalized.filter(x=>x.name&&x.className&&x.number);const skipped=rows.length-valid.length;if(!valid.length)throw Error('找不到「班級、座號、姓名」欄位，請先下載名冊範本');
+ for(const s of valid){if(!data.rooms[s.room]){data.rooms[s.room]=clone(rowCfg(selectedRoom));data.roomKinds[s.room]='extra'}data.roster.push({id:studentId(),...s,rules:{}})}data.seatPlans={};save();paintSeatCenter();renderBoard();toast(`匯入 ${valid.length} 位學生，略過 ${skipped} 筆不完整資料`)}catch(e){toast('名冊匯入失敗：'+e.message)}finally{event.target.value=''}}
+function parseCsvMatrix(text){const rows=[];let row=[],cell='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(ch===','&&!quoted){row.push(cell);cell=''}else if((ch==='\r'||ch==='\n')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell=''}else cell+=ch}if(cell||row.length){row.push(cell);rows.push(row)}return rows}
+
+
+// V1.9: everyday classroom management. Legacy advanced fields remain hidden only for compatibility.
+for(const s of data.roster){
+  if(!s.rules) s.rules={};
+  delete s.rules.noNine; delete s.rules.noNeighbor; delete s.rules.avoidNine;
+}
+// Previously created dedicated exam venues are not exposed as classroom options.
+for(const room of Object.keys(data.roomKinds||{})){
+  const fallback=(data.rooms['知足班']?'知足班':selectedRoom);
+  data.roster.filter(s=>s.room===room).forEach(s=>s.room=fallback);
+  if(room!==fallback)delete data.rooms[room];
+}
+data.roomKinds={};
+if(!data.rooms[selectedRoom]){selectedRoom=data.rooms['知足班']?'知足班':Object.keys(data.rooms)[0];data.room=selectedRoom}
+const oldPlanSeatCells=paintSeatCells;
+paintSeatCells=function(container,room,mini=false){
+ const cfg=rowCfg(room),cells=seatCells(cfg),plan=planFor(room),roster=roomRoster(room),byId=new Map(roster.map(s=>[s.id,s]));
+ container.style.gridTemplateColumns=`repeat(${cells.cols},minmax(0,1fr))`;
+ container.innerHTML=Array.from({length:cells.rows*cells.cols},(_,i)=>{
+   const pos=`${Math.floor(i/cells.cols)},${i%cells.cols}`;
+   const s=byId.get(plan[pos]),allowed=cells.nums.has(pos);
+   if(s){const status=getStatus(s);return `<div class="seat student" draggable="true" role="button" tabindex="0" data-pos="${pos}" data-status="${status}" title="${esc(s.number)}號 ${esc(s.name)}：${statusLabels[status]}"><span class="student-seat-number">${esc(s.number)} 號</span><strong>${esc(s.name)}</strong><span class="student-status">${statusLabels[status]}</span></div>`}
+   return `<div class="seat empty seat-empty-small" data-pos="${pos}">${allowed?'空位':'—'}</div>`;
+ }).join('');container.dataset.room=room;
+};
+const oldPaintSeatCenter=paintSeatCenter;
+paintSeatCenter=function(){oldPaintSeatCenter();
+  // Single-class roster table: no per-student venue switching.
+  const head=document.querySelector('#rosterRows')?.closest('table')?.querySelector('thead tr');
+  if(head)head.innerHTML='<th>序</th><th>班級</th><th>座號</th><th>姓名</th><th>出缺席</th><th>操作</th>';
+  document.querySelectorAll('#rosterRows tr').forEach(tr=>{if(tr.children.length===7)tr.children[4].remove()});
+};
+const oldRunSeatPlan=runSeatPlan;
+runSeatPlan=function(){
+  // Removed specialist exam seating modes cannot accidentally remain active.
+  $('seatPattern').value='normal';$('seatStep').value='1';$('seatOffset').value='0';$('seatPrefix').value='';$('seatLimit').value='';$('seatSkip').value='';$('seatReverse').checked=false;
+  const a=$('seatOrder');if(![...a.options].some(x=>x.value===a.value))a.value='row';
+  oldRunSeatPlan();
+};
+const oldSaveSeats=saveSeats;
+saveSeats=function(){
+  $('seatPattern').value='normal';$('seatStep').value='1';$('seatOffset').value='0';$('seatPrefix').value='';$('seatLimit').value='';$('seatSkip').value='';$('seatReverse').checked=false;
+  oldSaveSeats();
+};
+const oldImportRoster=importRoster;
+importRoster=async function(e){
+  // Ignore obsolete 'exam venue' column; do not create special rooms from roster files.
+  const originalNorm=normRosterRow;
+  // Native import function uses normRosterRow, whose return is overridden below.
+  return oldImportRoster(e);
+};
+const oldNormRosterRow=normRosterRow;
+normRosterRow=function(row){const s=oldNormRosterRow(row);s.room=selectedRoom;return s};
+downloadRosterTemplate=function(){download('classroom_roster.csv','\uFEFF班級,座號,姓名\n八年一班,1,學生甲\n八年一班,2,學生乙\n','text/csv;charset=utf-8')};
+// V1.9: reliable Chinese roster import (Excel native + UTF-8 / Big5 / UTF-16 CSV).
+const ROSTER_XLSX_BASE64='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';
+function downloadRosterXlsxTemplate(){
+ const binary=atob(ROSTER_XLSX_BASE64),bytes=new Uint8Array(binary.length);
+ for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+ const url=URL.createObjectURL(new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+ const a=document.createElement('a');a.href=url;a.download='班級學生名冊_Excel範本.xlsx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+downloadRosterTemplate=function(){download('班級學生名冊_UTF8.csv','\uFEFF班級,座號,姓名\r\n八年一班,01,學生甲\r\n八年一班,02,學生乙\r\n','text/csv;charset=utf-8')};
+function rosterEncodingDecode(buffer){
+ const bytes=new Uint8Array(buffer);const candidates=[];
+ function push(encoding,strip=false){try{const decoded=new TextDecoder(encoding,{fatal:true}).decode(strip?bytes.slice(2):bytes);candidates.push({encoding,text:decoded})}catch(e){}}
+ if(bytes[0]===0xff&&bytes[1]===0xfe)push('utf-16le',true);
+ else if(bytes[0]===0xfe&&bytes[1]===0xff)push('utf-16be',true);
+ else{push('utf-8');push('big5');}
+ if(!candidates.length)throw Error('檔案文字編碼無法解析，請改用 Excel .xlsx 格式');
+ function score(v){let t=v.text;return (t.includes('姓名')?20:0)+(t.includes('座號')?20:0)+(t.includes('班級')?20:0)+(t.includes('學生')?4:0)-((t.match(/�/g)||[]).length*8)}
+ candidates.sort((a,b)=>score(b)-score(a));return candidates[0];
+}
+function rosterMatrix(text){
+ const cleaned=text.replace(/^\uFEFF/,'').replace(/\u0000/g,'');
+ const first=(cleaned.split(/\r?\n/).find(x=>x.trim())||'');
+ const delimiters=[',','\t',';'];const delimiter=delimiters.sort((a,b)=>first.split(b).length-first.split(a).length)[0];
+ const out=[];let cells=[],cell='',quoted=false;
+ for(let i=0;i<cleaned.length;i++){const ch=cleaned[i];if(ch==='"'){if(quoted&&cleaned[i+1]==='"'){cell+='"';i++}else quoted=!quoted}else if(ch===delimiter&&!quoted){cells.push(cell);cell=''}else if((ch==='\r'||ch==='\n')&&!quoted){if(ch==='\r'&&cleaned[i+1]==='\n')i++;cells.push(cell);out.push(cells);cells=[];cell=''}else cell+=ch}
+ if(cells.length||cell){cells.push(cell);out.push(cells)}return out.filter(r=>r.some(x=>String(x).trim()));
+}
+function rosterColumnName(s){return String(s??'').replace(/^\uFEFF/,'').replace(/[\s　\u00a0:：()（）]/g,'').toLowerCase()}
+function rosterNormalizeRow(r){
+ const normalized={};Object.entries(r).forEach(([k,v])=>normalized[rosterColumnName(k)]=String(v??'').trim());
+ const take=(...names)=>names.map(n=>normalized[rosterColumnName(n)]).find(v=>v!==undefined&&v!=='')||'';
+ return {className:take('班級','原班級','班別','class','className','班級名稱'),number:take('座號','學號','座位號碼','號碼','seat','number'),name:take('姓名','學生姓名','學生名字','name'),room:selectedRoom}
+}
+async function importRosterV19(event){
+ const file=event.target.files?.[0];if(!file)return;
+ const feedback=$('rosterImportStatus');if(feedback)feedback.textContent='正在檢查檔案：'+file.name;
+ try{
+  let rows=[],encoding='Excel';
+  if(/\.(csv|txt)$/i.test(file.name)){
+   const decoded=rosterEncodingDecode(await file.arrayBuffer());encoding=decoded.encoding;
+   const matrix=rosterMatrix(decoded.text);if(!matrix.length)throw Error('名冊是空的');
+   const headerIndex=matrix.findIndex(r=>r.some(v=>/姓名|name/i.test(v))&&r.some(v=>/座號|學號|number|seat/i.test(v)));
+   if(headerIndex<0)throw Error('找不到「座號」及「姓名」欄位，請依照新版範本設定第一列欄名');
+   const headers=matrix[headerIndex];rows=matrix.slice(headerIndex+1).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??''])));
+  }else if(/\.(xlsx|xls)$/i.test(file.name)){
+   if(!window.XLSX){try{await loadScript('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js')}catch(err){throw Error('Excel 解析元件無法載入，請確認網路，或將 Excel 另存「CSV UTF-8」再匯入')}}
+   const wb=XLSX.read(await file.arrayBuffer(),{type:'array',raw:false});
+   for(const name of wb.SheetNames){const matrix=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:'',raw:false});const idx=matrix.findIndex(r=>r.some(v=>/姓名|name/i.test(String(v)))&&r.some(v=>/座號|學號|number|seat/i.test(String(v))));if(idx<0)continue;const headers=matrix[idx];rows.push(...matrix.slice(idx+1).filter(r=>r.some(v=>String(v).trim())).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??'']))))}
+  }else throw Error('只接受 .xlsx、.xls、.csv 或 .txt');
+  const normalized=rows.map(rosterNormalizeRow);const valid=normalized.filter(s=>s.name&&s.number);
+  if(!valid.length)throw Error('沒有可匯入的學生。需包含「座號、姓名」，班級可空白');
+  const existing=new Set(data.roster.filter(s=>s.room===selectedRoom).map(s=>[s.className,s.number,s.name].join('|')));
+  let added=0,duplicates=0;
+  for(const s of valid){s.className=s.className||selectedRoom;const key=[s.className,s.number,s.name].join('|');if(existing.has(key)){duplicates++;continue}existing.add(key);data.roster.push({id:studentId(),...s,rules:{}});added++}
+  if(added){delete data.seatPlans[selectedRoom];save();paintSeatCenter();renderBoard()}
+  const summary=`匯入成功：新增 ${added} 人；略過不完整 ${rows.length-valid.length} 筆；重複 ${duplicates} 筆。檔案編碼：${encoding}。請按「產生班級座位表」。`;
+  if(feedback)feedback.textContent=summary;toast(summary);
+ }catch(err){if(feedback)feedback.textContent='匯入失敗：'+err.message;toast('匯入失敗：'+err.message)}finally{event.target.value=''}
+}
+importRoster=importRosterV19;
+// No unused exam-room objects should reappear in room selectors.
+save();
+
+paintImport();renderBoard();tick();setInterval(tick,1000);
+</script>
+</body></html>
