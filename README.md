@@ -31,3 +31,14 @@
 
 ## 發布
 GitHub Pages：main 分支，根目錄。完整下載 ZIP 包含網頁、兩張背景插圖、本說明與驗證紀錄。
+
+## V1.16 教師登入與雲端同步（尚待啟用）
+
+已加入 Supabase 登入、班級授權、雲端儲存與版本衝突處理程式。**目前沒有配置實際雲端專案，預設維持原本的本機模式。**
+
+- 啟用文件：`cloud/SETUP.md`
+- 資料庫與 RLS SQL：`cloud/schema.sql`
+- 公開用戶端設定：`cloud/config.js`（目前空白）
+- 前端同步程式：`cloud/runtime.js`
+
+啟用前先連接 Supabase 專案、執行 SQL、建立老師帳號及授權班級，並用兩台設備實測。**公開 GitHub 禁止放 service_role、secret key、教師密碼或真實學生名冊。**
