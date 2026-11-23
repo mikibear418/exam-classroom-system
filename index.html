@@ -3,7 +3,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>段考監考教室系統 V1.15｜班級獨立自動儲存</title>
+<title>段考監考教室系統 V1.16｜教師登入與雲端同步準備</title>
 <style>
 :root{--bg:#081727;--panel:#12263b;--panel2:#19334b;--edge:#2b4560;--muted:#a9bfd0;--text:#eff7ff;--mint:#73e0c8;--gold:#ffda8b;--blue:#6eb4ff;--danger:#ff958a;--shadow:0 18px 48px #030b1670}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.42;cursor:not-allowed}.shell{max-width:1800px;margin:auto;padding:20px 28px 32px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:12px}.logo{display:grid;place-items:center;width:46px;height:46px;background:linear-gradient(135deg,#268888,#346ebc);border:1px solid #80e2d3;border-radius:14px;font-size:23px}.brand b{font-size:20px;letter-spacing:1px}.brand small{display:block;color:var(--muted);font-size:12px;margin-top:2px}.nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn{border:1px solid var(--edge);background:#1b3249;color:var(--text);border-radius:11px;padding:10px 15px;font-weight:650}.btn:hover{filter:brightness(1.16)}.btn.active,.btn.primary{background:#2a7f87;border-color:#61c7c3;color:white}.btn.ghost{background:transparent}.btn.red{border-color:#92504d;color:#ffc5bb}.status{font-size:12px;color:#a3f4cd;border:1px solid #38685d;background:#143c38;border-radius:99px;padding:6px 11px}.board-head{background:linear-gradient(115deg,#1c3853,#102d47 65%,#17494a);border:1px solid var(--edge);border-radius:22px;padding:24px 30px;display:flex;justify-content:space-between;align-items:center;gap:16px;box-shadow:var(--shadow)}.eyebrow{font-size:13px;color:var(--mint);font-weight:750;letter-spacing:2px}.board-head h1{font-size:clamp(26px,3.1vw,48px);margin:6px 0 10px;letter-spacing:2px}.subtitle{color:#d1e5f3;font-size:clamp(14px,1.35vw,20px)}.head-right{text-align:right}.clock{font-variant-numeric:tabular-nums;font-weight:850;line-height:1;font-size:clamp(35px,4.2vw,69px)}.date-line{color:var(--muted);margin-top:12px}.selector-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0}.selector-row select,.selector-row input{background:#153048;color:white;border:1px solid var(--edge);border-radius:9px;padding:10px 12px}.selector-row label{color:#c9dce7;font-weight:700}.modehint{margin-left:auto;font-size:13px;color:var(--muted)}.board-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(340px,1fr);gap:17px}.panel{background:var(--panel);border:1px solid var(--edge);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 23px;border-bottom:1px solid var(--edge);gap:8px}.panel-head h2{font-size:20px;margin:0}.panel-head small{color:var(--muted)}.main-exam{padding:23px;min-height:266px;display:flex;flex-direction:column;justify-content:center}.exam-chip{display:inline-flex;align-self:flex-start;gap:8px;align-items:center;color:#061f29;background:var(--mint);border-radius:20px;padding:6px 13px;font-weight:850;font-size:13px}.exam-subject{font-size:clamp(54px,7vw,110px);line-height:1.2;font-weight:900;letter-spacing:5px;margin:15px 0}.exam-time{font-size:clamp(23px,2.2vw,34px);color:#d6e7ef;font-weight:750}.exam-extra{color:var(--muted);margin-top:12px}.countdown{background:#071f30;border:1px solid #244c5c;border-radius:15px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}.countdown .num{font-size:clamp(28px,3.3vw,53px);font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums}.countdown .label{color:#c3dbeb;font-weight:700}.schedule{padding:8px 15px 17px}.exam-row{display:grid;grid-template-columns:116px 1fr auto;align-items:center;gap:12px;padding:15px 10px;border-bottom:1px solid #28425b}.exam-row:last-child{border-bottom:0}.exam-row.current{background:#153f48;border-radius:11px;border-color:transparent}.exam-row .time{color:#bad2e5;font-variant-numeric:tabular-nums;font-size:15px}.exam-row .subject{font-size:20px;font-weight:800}.exam-row .pill{font-size:12px;border:1px solid #466376;border-radius:99px;padding:5px 9px;color:#c8dcec;white-space:nowrap}.exam-row.current .pill{color:#8af4db;border-color:#5ba9a0}.side-stack{display:grid;grid-template-rows:auto auto;gap:17px;align-content:start}.seat-wrap{padding:18px 20px 22px}.seat-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:10px}.teacher{border:1px dashed #628da6;background:#1d3a50;border-radius:8px;text-align:center;padding:7px;color:#dceaf2;margin:0 auto 16px;width:55%;font-weight:700}.seats{display:grid;gap:8px;margin:auto;max-width:490px}.seat{aspect-ratio:1.26;border:1px solid #416784;background:#1a4057;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:clamp(13px,1.4vw,22px);font-weight:850}.seat i{font-style:normal;font-weight:400;font-size:10px;color:#9fc4d7}.seat.empty{background:transparent;border:1px dashed #38536a;color:#6f8aa0}.notice-list{padding:8px 21px 19px}.notice{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid #29445b;line-height:1.55;font-size:17px}.notice:last-child{border-bottom:0}.notice .bullet{color:var(--gold);font-weight:900}.foot{color:#8eabbf;text-align:center;font-size:12px;margin-top:17px}.hidden{display:none!important}.admin-layout{display:grid;grid-template-columns:220px 1fr;gap:18px}.admin-tabs{display:grid;gap:8px;align-content:start}.admin-tabs button{text-align:left}.admin-content{padding:25px;min-height:610px}.admin-content h2{margin:0 0 7px;font-size:27px}.admin-content p.help{color:var(--muted);margin:0 0 21px;line-height:1.7}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:13px 0}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:14px;font-weight:750;color:#c7dce9}.field input,.field select,.field textarea{width:100%;background:#0e2236;color:white;border:1px solid #426079;border-radius:9px;padding:11px}.field textarea{min-height:125px;resize:vertical}.wide{grid-column:1/-1}.actions{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0}.admin-table{width:100%;border-collapse:collapse;margin-top:12px}.admin-table th,.admin-table td{text-align:left;padding:12px 9px;border-bottom:1px solid #2d4961}.admin-table th{color:#a9c6d8;font-size:13px}.admin-table td{font-size:15px}.admin-table td input{width:100%;min-width:82px;padding:8px;background:#10263c;border:1px solid #3b5e77;border-radius:7px;color:white}.admin-table td .btn{padding:6px 10px;font-size:12px}.note{background:#0b2940;border:1px solid #315675;color:#c3deef;border-radius:12px;padding:13px 16px;line-height:1.65;margin:16px 0}.file-zone{border:2px dashed #4e7e99;border-radius:16px;padding:24px;text-align:center;background:#102c42}.file-zone input{max-width:100%;margin:12px 0}.preview-wrap{max-height:520px;overflow:auto}.tag{font-size:12px;color:var(--mint)}.toast{position:fixed;bottom:20px;right:20px;background:#1e605b;color:white;box-shadow:var(--shadow);padding:14px 20px;border-radius:12px;z-index:30;display:none}.toast.show{display:block}.visually-hidden{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden}.empty-state{padding:24px;color:#a7c0d1;text-align:center}.top-alert{display:none;background:#564322;border:1px solid #98753e;border-radius:10px;padding:10px 14px;margin-bottom:15px;color:#ffdfa1}.top-alert.show{display:block}.mini{font-size:12px;color:var(--muted)}@media(max-width:1050px){.board-grid{grid-template-columns:1fr}.side-stack{grid-template-columns:1fr 1fr;grid-template-rows:auto}.admin-layout{grid-template-columns:1fr}.admin-tabs{display:flex;overflow:auto}.fields{grid-template-columns:1fr 1fr}}@media(max-width:650px){.shell{padding:12px}.topbar,.board-head{flex-wrap:wrap}.head-right{text-align:left}.board-head{padding:18px}.clock{font-size:38px}.side-stack{grid-template-columns:1fr}.fields{grid-template-columns:1fr}.admin-content{padding:16px}.exam-subject{font-size:54px}.exam-row{grid-template-columns:99px 1fr auto}.modehint{margin-left:0}}
 body.fullboard .shell{max-width:none;padding:12px 24px}body.fullboard .topbar,body.fullboard .foot{display:none}body.fullboard .board-head{margin-top:6px}body.fullboard .main-exam{min-height:350px}body.fullboard .notice{font-size:21px}body.fullboard .exam-row{padding-top:20px;padding-bottom:20px}
@@ -252,7 +252,7 @@ html[data-theme] button:focus-visible,html[data-theme] select:focus-visible,html
 </style></head>
 <body>
 <div class="shell">
-<header class="topbar"><div class="brand"><div class="logo">▦</div><div><b>段考監考教室系統</b><small>V1.15 · 各班獨立・自動儲存</small></div></div><div class="nav"><label class="theme-control" for="themeSelect"><span>主題配色</span><select id="themeSelect" aria-label="主題配色" onchange="applyTheme(this.value)"><option value="lavender">紫藤</option><option value="sky">晴空</option><option value="mint">薄荷</option><option value="amber">暖杏</option><option value="rose">櫻花</option><option value="slate">岩灰</option></select></label><span class="status">● 自動儲存已啟用</span><button class="btn active" id="boardNav" onclick="showMode('board')">▣ 電子白板</button><button class="btn" id="adminNav" onclick="showMode('admin')">⚙ 後台管理</button><div class="class-file-actions"><span id="autosaveLabel" class="status" title="自動存至此裝置此瀏覽器">✓ 已自動儲存</span><button class="btn" onclick="exportClassVersion()" title="下載目前班級資料檔">💾 儲存本班版本</button><label class="btn class-file-picker">📂 載入班級版本<input type="file" accept=".json,application/json" class="visually-hidden" onchange="importClassVersion(event)"></label></div><button class="btn ghost" onclick="toggleFull()">⛶ 全螢幕</button></div></header>
+<header class="topbar"><div class="brand"><div class="logo">▦</div><div><b>段考監考教室系統</b><small>V1.16 · 教師登入・雲端同步</small></div></div><div class="nav"><label class="theme-control" for="themeSelect"><span>主題配色</span><select id="themeSelect" aria-label="主題配色" onchange="applyTheme(this.value)"><option value="lavender">紫藤</option><option value="sky">晴空</option><option value="mint">薄荷</option><option value="amber">暖杏</option><option value="rose">櫻花</option><option value="slate">岩灰</option></select></label><span class="status">● 自動儲存已啟用</span><button class="btn active" id="boardNav" onclick="showMode('board')">▣ 電子白板</button><button class="btn" id="adminNav" onclick="showMode('admin')">⚙ 後台管理</button><div class="class-file-actions"><span id="autosaveLabel" class="status" title="自動存至此裝置此瀏覽器">✓ 已自動儲存</span><button class="btn" onclick="exportClassVersion()" title="下載目前班級資料檔">💾 儲存本班版本</button><label class="btn class-file-picker">📂 載入班級版本<input type="file" accept=".json,application/json" class="visually-hidden" onchange="importClassVersion(event)"></label></div><button class="btn ghost" onclick="toggleFull()">⛶ 全螢幕</button></div></header>
 <div id="boardView">
 <div class="study-mascots" aria-hidden="true"><img src="assets/boy.webp" alt=""><img src="assets/girl.webp" alt=""></div>
 <section class="board-head"><div class="heading-main"><div><div class="eyebrow">EXAMINATION SCHEDULE</div><h1 id="schoolTitle">115 學年度・第 2 次定期評量</h1><div class="subtitle" id="roomTitle">八年級</div></div><span class="classroom-tag" id="classroomTag">🏫 知足班</span></div></section>
@@ -360,10 +360,16 @@ function loadClassProfile(room){
 if(data.classSettings[activeClassRoom])loadClassProfile(activeClassRoom);
 else captureClass(activeClassRoom);
 function switchClassRoom(room){
- if(!data.rooms[room]||room===activeClassRoom)return;
- captureClass(activeClassRoom);
- loadClassProfile(room);
- save();applyTheme(data.theme,false);
+ if((!data.rooms[room]&&!window.EXAM_CLOUD_SYNC?.canSwitch(room))||room===activeClassRoom)return;
+ if(window.EXAM_CLOUD_SYNC&&!window.EXAM_CLOUD_SYNC.canSwitch(room)){toast('未獲授權查看此班');return}
+ window.__examCloudSwitching=true;
+ try{
+  if(!data.rooms[room])data.rooms[room]=clone(SAMPLE.rooms['知足班']);
+  captureClass(activeClassRoom);
+  loadClassProfile(room);
+  save();applyTheme(data.theme,false);
+ }finally{window.__examCloudSwitching=false}
+ window.EXAM_CLOUD_SYNC?.roomChanged(room);
 }
 function reloadClassProfilesAfterRestore(){
  data.classSettings??={};activeClassRoom=selectedRoom;
@@ -381,7 +387,7 @@ function silentPersist(){
  if(status)status.textContent='✓ 已自動儲存 · '+activeClassRoom;
 }
 
-function save(){try{captureClass();localStorage.setItem(STORE,JSON.stringify(data));autoSaveIndicator()}catch{toast('儲存失敗，可能已超出瀏覽器容量')}}
+function save(){try{captureClass();if(!window.EXAM_CLOUD_CONFIG?.url)localStorage.setItem(STORE,JSON.stringify(data));autoSaveIndicator();if(!window.__examCloudApplying&&!window.__examCloudSwitching)window.EXAM_CLOUD_SYNC?.localChanged(activeClassRoom,window.EXAM_APP?.serializeRoom(activeClassRoom))}catch{toast('儲存失敗，可能已超出瀏覽器容量')}}
 function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').classList.remove('show'),3100)}
 function showMode(next){mode=next;$('boardView').classList.toggle('hidden',next!=='board');$('adminView').classList.toggle('hidden',next!=='admin');$('boardNav').classList.toggle('active',next==='board');$('adminNav').classList.toggle('active',next==='admin');if(next==='board')renderBoard();else openTab('schedule')}
 function openTab(tab){for(const x of ['schedule','seat','notice','attendance','layout','import','settings']){$('pane'+x[0].toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==tab);$('tab'+x[0].toUpperCase()+x.slice(1)).classList.toggle('active',x===tab)}if(tab==='schedule'){ $('editDate').value=selectedDate;$('editGrade').value=selectedGrade;renderAdminSchedule()}if(tab==='seat')loadSeatForm();if(tab==='notice'){$('noticesInput').value=data.notices.join('\n');syncNoticeSlider()};if(tab==='settings')loadSettings();if(tab==='attendance')initAttendanceForm();if(tab==='layout')paintLayoutControls()}
@@ -392,7 +398,7 @@ function changeRoom(){switchClassRoom($('viewRoom').value);renderBoard()}
 function clockDate(date){const days='日一二三四五六';return `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} 星期${days[date.getDay()]}`}
 function minutes(str){const m=String(str||'').match(/(\d{1,2}):(\d{2})/);return m?+m[1]*60 + +m[2]:0}
 function phase(exams,now){const t=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;let current=exams.find(x=>t>=minutes(x.start)&&t<minutes(x.end));if(current)return {exam:current,label:'考試進行中',count:'距離結束',seconds:Math.max(0,Math.ceil((minutes(current.end)-t)*60)),style:'active'};let next=exams.find(x=>minutes(x.start)>t);if(next)return{exam:next,label:'下一節考試',count:'距離開始',seconds:Math.max(0,Math.ceil((minutes(next.start)-t)*60)),style:'next'};return{exam:exams.at(-1),label:'今日考試已結束',count:'今日考程',seconds:0,style:'done'}}
-function renderBoard(){applyTheme(data.theme,false);fillSelect($('viewDate'),availableDates(),selectedDate);fillSelect($('viewGrade'),grades,selectedGrade);fillSelect($('viewRoom'),Object.keys(data.rooms),selectedRoom);$('schoolTitle').textContent=data.title;$('roomTitle').textContent=selectedGrade;$('classroomTag').textContent=`🏫 ${selectedRoom}${/班$|教室$/.test(selectedRoom)?'':' 教室'}`;const exams=data.exams.filter(x=>x.date===selectedDate&&x.grade===selectedGrade).sort((a,b)=>a.start.localeCompare(b.start));const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const now=new Date();let inf;if(selectedDate===today){inf=phase(exams,now)}else{inf={exam:exams[0],label:'考程預覽',count:'依日期顯示',seconds:0,style:'preview'}}
+function renderBoard(){applyTheme(data.theme,false);fillSelect($('viewDate'),availableDates(),selectedDate);fillSelect($('viewGrade'),grades,selectedGrade);fillSelect($('viewRoom'),window.EXAM_CLOUD_SYNC?.rooms()||Object.keys(data.rooms),selectedRoom);$('schoolTitle').textContent=data.title;$('roomTitle').textContent=selectedGrade;$('classroomTag').textContent=`🏫 ${selectedRoom}${/班$|教室$/.test(selectedRoom)?'':' 教室'}`;const exams=data.exams.filter(x=>x.date===selectedDate&&x.grade===selectedGrade).sort((a,b)=>a.start.localeCompare(b.start));const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const now=new Date();let inf;if(selectedDate===today){inf=phase(exams,now)}else{inf={exam:exams[0],label:'考程預覽',count:'依日期顯示',seconds:0,style:'preview'}}
  $('phaseText').textContent=inf.label;$('examChip').textContent=inf.label;$('mainSubject').textContent=inf.exam?.subject||'尚未設定考程';$('mainTime').textContent=inf.exam?`${inf.exam.start} — ${inf.exam.end}`:'請到後台新增';$('examExtra').textContent=inf.exam?.note||'請依監考教師指示應試';$('countLabel').textContent=inf.count;$('countValue').textContent=inf.style==='preview'?'— — : — —':formatSeconds(inf.seconds);$('scheduleCaption').textContent=`${selectedDate} · ${selectedGrade}`;
  $('scheduleList').innerHTML=exams.length?exams.map(x=>`<div class="exam-row ${inf.style==='active'&&inf.exam===x?'current':''}"><div class="time">${esc(x.start)}–${esc(x.end)}</div><div class="subject">${esc(x.subject)}</div><div class="pill">${inf.exam===x&&inf.style==='active'?'進行中':minutes(x.end)<now.getHours()*60+now.getMinutes()&&selectedDate===today?'已結束':'排定考試'}</div></div>`).join(''):'<div class="empty-state">此日期及年段尚無考程，請至後台新增或匯入。</div>';
  $('noticeList').innerHTML=data.notices.map((n,i)=>`<div class="notice"><span class="bullet">${String(i+1).padStart(2,'0')}</span><span>${esc(n)}</span></div>`).join('')||'<div class="empty-state">尚未設定注意事項</div>';renderSeat();renderAttendance();applyBoardLayout();$('alert').classList.toggle('show',selectedDate!==today);$('alert').textContent=selectedDate!==today?'目前顯示非今日考程（預覽模式），倒數計時暫停。':''}
@@ -1068,5 +1074,61 @@ document.addEventListener('fullscreenchange',()=>{
  fitWhiteboard();
 });
 fitWhiteboard();
+
+/* V1.16 adapter: keeps each class isolated when syncing authorized data. */
+const cloudCachedRooms=new Map();
+window.EXAM_APP={
+ currentRoom:()=>activeClassRoom,
+ selectRoom(room){
+  if(!data.rooms[room])data.rooms[room]=clone(SAMPLE.rooms['知足班']);
+  captureClass(activeClassRoom);loadClassProfile(room);renderBoard();
+ },
+ serializeRoom(room){
+  const profile=room===activeClassRoom?currentClassProfile():(data.classSettings?.[room]||null);
+  const scoped=obj=>Object.fromEntries(Object.entries(obj||{}).filter(([k])=>k.split('|')[2]===room));
+  return {
+   format:'exam-classroom-cloud',version:1,
+   profile:clone(profile||data.classDefaultProfile),
+   config:clone(data.rooms[room]||SAMPLE.rooms['知足班']),
+   roster:clone((data.roster||[]).filter(st=>st.room===room)),
+   seatPlan:clone(data.seatPlans?.[room]||{}),
+   planOptions:clone(data.planOptions?.[room]||{}),
+   planWarnings:clone(data.planWarnings?.[room]||[]),
+   studentStates:scoped(data.studentStates),
+   attendance:scoped(data.attendance),
+   examDrafts:Object.fromEntries(Object.entries(data.examDrafts||{}).filter(([k])=>k.startsWith(room+'|'))),
+   attendanceDrafts:scoped(data.attendanceDrafts),
+   seatRuleDraft:clone(data.seatRuleDrafts?.[room]||{})
+  };
+ },
+ cacheSnapshot(room,payload){cloudCachedRooms.set(room,payload)},
+ applySnapshot(room,payload){
+  if(!payload||payload.format!=='exam-classroom-cloud'||payload.version!==1||!payload.profile||!Array.isArray(payload.roster))throw Error('雲端班級資料格式有誤');
+  window.__examCloudApplying=true;
+  try{
+   data.rooms[room]=clone(payload.config||SAMPLE.rooms['知足班']);
+   data.classSettings??={};data.classSettings[room]=clone(payload.profile);
+   data.roster=(data.roster||[]).filter(st=>st.room!==room).concat(payload.roster.map(st=>({...st,room})));
+   for(const key of ['seatPlans','planOptions','planWarnings','seatRuleDrafts'])data[key]??={};
+   data.seatPlans[room]=clone(payload.seatPlan||{});
+   data.planOptions[room]=clone(payload.planOptions||{});
+   data.planWarnings[room]=clone(payload.planWarnings||[]);
+   data.seatRuleDrafts[room]=clone(payload.seatRuleDraft||{});
+   for(const [dest,source] of [['studentStates',payload.studentStates],['attendance',payload.attendance],['attendanceDrafts',payload.attendanceDrafts]]){
+    data[dest]??={};
+    for(const key of Object.keys(data[dest]))if(key.split('|')[2]===room)delete data[dest][key];
+    for(const [key,val] of Object.entries(source||{}))if(key.split('|')[2]===room)data[dest][key]=val;
+   }
+   data.examDrafts??={};
+   for(const key of Object.keys(data.examDrafts))if(key.startsWith(room+'|'))delete data.examDrafts[key];
+   for(const [key,val] of Object.entries(payload.examDrafts||{}))if(key.startsWith(room+'|'))data.examDrafts[key]=val;
+   loadClassProfile(room);renderBoard();
+   if(mode==='admin'){loadSettings();openTab('schedule')}
+  }finally{window.__examCloudApplying=false}
+ }
+};
 </script>
+<script src="cloud/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="cloud/runtime.js"></script>
 </body></html>
