@@ -79,6 +79,11 @@
     activeRoom=room;loadingRoom=true;
     if(app.currentRoom()!==room)app.selectRoom(room);
     const select=document.getElementById('cloudRoom');select.value=room;
+    const writer=canWrite(room);
+    const adminBtn=document.getElementById('adminNav');if(adminBtn)adminBtn.disabled=!writer;
+    document.querySelectorAll('.resize-grip').forEach(btn=>{btn.style.pointerEvents=writer?'':'none';btn.style.opacity=writer?'':'.2'});
+    document.getElementById('cloudUpload').style.display=writer?'':'none';
+    if(!writer&&document.getElementById('adminView')&&!document.getElementById('adminView').classList.contains('hidden'))app.showBoard?.();
     subscribe(room);
     try{await loadRemote(room)}finally{loadingRoom=false;}
   }
@@ -93,7 +98,7 @@
       await openRoom(next);
       if(serial!==sessionSerial)return;
       gate(false);
-      status('✓ 已登入 · '+next);
+      status(revisions.get(next)>0 ? ('✓ 雲端已載入 · '+next+(canWrite(next)?'':'（唯讀）')) : ('首次使用，請按「初始化本班」 · '+next));
     }catch(e){gate(true,'連線或權限設定錯誤：'+e.message);}
   }
   async function savePending(room){
@@ -126,7 +131,8 @@
     rooms(){return memberships.map(m=>m.room)},
     canSwitch(room){return !!membership(room)},
     localChanged(room,payload){
-      if(!user||!membership(room)||!canWrite(room)||!verified.has(room)||!payload)return;
+      if(!user||!membership(room)||!verified.has(room)||!payload)return;
+      if(!canWrite(room)){status('此班為唯讀權限，無法儲存修改');return;}
       dirty.add(room);pending.set(room,payload);
       status('正在儲存到雲端…');planSave(room);
     },
