@@ -21,7 +21,7 @@
     '<p style="line-height:1.6;color:#5d6680;margin:0 0 12px">請使用學校核發的教師帳號。只有獲授權的班級可開啟及修改。</p>'+
     '<form id="cloudLogin"><label>電子郵件<input id="cloudEmail" type="email" autocomplete="username" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 10px"></label>'+
     '<label>密碼<input id="cloudPassword" type="password" autocomplete="current-password" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 14px"></label>'+
-    '<button type="submit" style="background:#6359b7;color:white;border:0;border-radius:9px;padding:11px 17px;cursor:pointer">登入雲端系統</button></form>'+
+    '<button type="submit" style="background:#6359b7;color:white;border:0;border-radius:9px;padding:11px 17px;cursor:pointer">密碼登入</button><button type="button" id="cloudMagicLink" style="margin-left:8px;background:#e6e1ff;color:#463b88;border:0;border-radius:9px;padding:11px 12px;cursor:pointer">寄送 Email 登入連結</button></form>'+
     '<button id="cloudGateLogout" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">切換教師帳號／登出</button><div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
     '</section>';
   document.body.appendChild(shade);
@@ -144,6 +144,16 @@
     }
   };
   document.getElementById('cloudGateLogout').addEventListener('click',async()=>{await db.auth.signOut();});
+  document.getElementById('cloudMagicLink').addEventListener('click',async()=>{
+    const email=document.getElementById('cloudEmail').value.trim();
+    if(!/^\\S+@\\S+\\.\\S+$/.test(email)){setGateStatus('請先輸入有效的電子郵件');return;}
+    setGateStatus('正在寄送登入郵件…');
+    const {error}=await db.auth.signInWithOtp({
+      email,
+      options:{shouldCreateUser:true,emailRedirectTo:window.location.origin+window.location.pathname}
+    });
+    setGateStatus(error?'郵件登入失敗：'+error.message:'已提出寄送請求。請檢查信箱並點擊登入連結；如未收到，請向管理者確認郵件服務設定。');
+  });
   document.getElementById('cloudLogin').addEventListener('submit',async(e)=>{
     e.preventDefault();setGateStatus('登入中…');
     const email=document.getElementById('cloudEmail').value.trim();
