@@ -50,7 +50,7 @@
   async function loadRemote(room,force=false){
     if(!user||!membership(room))return;
     const row=await queryRow(room);
-    if(!row){revisions.set(room,0);verified.add(room);status('此班尚未建立雲端資料');return;}
+    if(!row){revisions.set(room,0);verified.add(room);if(app.currentRoom()===room)app.initializeEmptyRoom(room);status('此班尚未建立雲端資料，顯示空白班級以保護既有本機名冊');return;}
     if(dirty.has(room) && !force){status('本機有未同步修改，請先處理衝突');return;}
     revisions.set(room,row.revision);
     verified.add(room);
