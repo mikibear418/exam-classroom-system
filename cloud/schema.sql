@@ -1,6 +1,11 @@
--- 段考監考教室系統 V1.16 — Supabase schema
+-- 段考監考教室系統 V1.16 — 已部署於 sbdygqnhawjonvdktqly 的安全資料表
+-- 建議以 migrations 作為實際部署紀錄，本檔為相同結構的參考 SQL
 -- 在 Supabase SQL Editor 執行。先建立 Auth 教師帳號，再用下方註解中的 SQL 授權班級。
 -- 請勿將密碼、service_role 或 secret key 放入公開的 GitHub。
+create schema if not exists classroom_private;
+revoke all on schema classroom_private from public, anon;
+grant usage on schema classroom_private to authenticated;
+
 create table if not exists public.classroom_members (
   room text not null check (char_length(room) between 1 and 40),
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -20,7 +25,7 @@ alter table public.classroom_members enable row level security;
 alter table public.classroom_state enable row level security;
 
 -- 授權判斷使用 SECURITY DEFINER，避免 RLS 政策對自身遞迴查詢。
-create or replace function public.classroom_can_access(p_room text,p_write boolean default false)
+create or replace function classroom_private.can_access(p_room text,p_write boolean default false)
 returns boolean language sql stable security definer set search_path = ''
 as $$
   select exists (
@@ -30,8 +35,8 @@ as $$
       and (not p_write or m.role in ('editor','admin'))
   )
 $$;
-revoke all on function public.classroom_can_access(text,boolean) from public;
-grant execute on function public.classroom_can_access(text,boolean) to authenticated;
+revoke all on function classroom_private.can_access(text,boolean) from public, anon;
+grant execute on function classroom_private.can_access(text,boolean) to authenticated;
 
 drop policy if exists member_read_self on public.classroom_members;
 create policy member_read_self on public.classroom_members
@@ -39,20 +44,21 @@ create policy member_read_self on public.classroom_members
 -- 班級成員只由學校管理者在 SQL Editor 或受保護的伺服器端新增，不提供網頁端任意加入功能。
 drop policy if exists state_read_member on public.classroom_state;
 create policy state_read_member on public.classroom_state
-  for select to authenticated using (public.classroom_can_access(room,false));
+  for select to authenticated using (classroom_private.can_access(room,false));
 drop policy if exists state_insert_editor on public.classroom_state;
 create policy state_insert_editor on public.classroom_state
   for insert to authenticated
-  with check (public.classroom_can_access(room,true) and updated_by = (select auth.uid()));
+  with check (classroom_private.can_access(room,true) and updated_by = (select auth.uid()));
 drop policy if exists state_update_editor on public.classroom_state;
 create policy state_update_editor on public.classroom_state
   for update to authenticated
-  using (public.classroom_can_access(room,true))
-  with check (public.classroom_can_access(room,true) and updated_by = (select auth.uid()));
-revoke all on public.classroom_members from anon;
-revoke all on public.classroom_state from anon;
+  using (classroom_private.can_access(room,true))
+  with check (classroom_private.can_access(room,true) and updated_by = (select auth.uid()));
+revoke all on public.classroom_members from public, anon, authenticated;
+revoke all on public.classroom_state from public, anon, authenticated;
 grant select on public.classroom_members to authenticated;
 grant select, insert, update on public.classroom_state to authenticated;
+revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
 
 -- 登入後的即時同步：只有 RLS 可讀到的資料會送達訂閱者。
 do $$
