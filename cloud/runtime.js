@@ -146,7 +146,7 @@
   document.getElementById('cloudGateLogout').addEventListener('click',async()=>{await db.auth.signOut();});
   document.getElementById('cloudMagicLink').addEventListener('click',async()=>{
     const email=document.getElementById('cloudEmail').value.trim();
-    if(!/^\\S+@\\S+\\.\\S+$/.test(email)){setGateStatus('請先輸入有效的電子郵件');return;}
+    if(!/^\S+@\S+\.\S+$/.test(email)){setGateStatus('請先輸入有效的電子郵件');return;}
     setGateStatus('正在寄送登入郵件…');
     const {error}=await db.auth.signInWithOtp({
       email,
