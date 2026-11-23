@@ -424,13 +424,70 @@ function seatCells(cfg){
 }
 function renderSeat(){const cfg=data.rooms[selectedRoom]||data.rooms[Object.keys(data.rooms)[0]];if(!cfg)return;const {cols,rows,nums}=seatCells(cfg);$('seatGrid').style.gridTemplateColumns=`repeat(${cols},minmax(0,1fr))`;$('seatGrid').innerHTML=Array.from({length:cols*rows},(_,i)=>{const n=nums.get(`${Math.floor(i/cols)},${i%cols}`);return n==null?'<div class="seat empty">—</div>':`<div class="seat">${esc(n)}<i>座號</i></div>`}).join('');$('seatMeta').textContent=`${rows} 排 × ${cols} 欄 · 安排 ${nums.size} 席`}
 function toggleFull(){if(!document.fullscreenElement){document.documentElement.requestFullscreen?.().then(()=>document.body.classList.add('fullboard')).catch(()=>toast('瀏覽器不支援全螢幕'))}else{document.exitFullscreen?.();document.body.classList.remove('fullboard')}}document.addEventListener('fullscreenchange',()=>document.body.classList.toggle('fullboard',!!document.fullscreenElement));
-function renderAdminSchedule(){const date=$('editDate').value,grade=$('editGrade').value;editRows=clone(data.exams.filter(x=>x.date===date&&x.grade===grade).sort((a,b)=>a.start.localeCompare(b.start)));paintEditor()}
-function paintEditor(){ $('examEditor').innerHTML=editRows.length?editRows.map((e,i)=>`<tr><td><input type="time" data-i="${i}" data-f="start" value="${esc(e.start)}"></td><td><input type="time" data-i="${i}" data-f="end" value="${esc(e.end)}"></td><td><input data-i="${i}" data-f="subject" value="${esc(e.subject)}" placeholder="科目"></td><td><input data-i="${i}" data-f="note" value="${esc(e.note||'')}" placeholder="選填"></td><td><button class="btn red" onclick="removeExam(${i})">移除</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">目前沒有考程，點選「新增考試」開始編輯。</td></tr>';$('examEditor').querySelectorAll('input').forEach(x=>x.addEventListener('change',()=>{editRows[+x.dataset.i][x.dataset.f]=x.value}))}
-function addExam(){editRows.push({date:$('editDate').value,grade:$('editGrade').value,start:'08:20',end:'09:30',subject:'',note:''});paintEditor()}
-function removeExam(i){editRows.splice(i,1);paintEditor()}
-function saveExams(){const date=$('editDate').value,grade=$('editGrade').value;if(!date)return toast('請先選擇日期');if(editRows.some(e=>!e.subject.trim()||!e.start||!e.end||e.end<=e.start))return toast('請填寫科目及正確起訖時間');data.exams=data.exams.filter(x=>x.date!==date||x.grade!==grade).concat(editRows.map(e=>({...e,date,grade,subject:e.subject.trim()})));save();selectedDate=date;selectedGrade=grade;toast('考程已儲存並更新電子白板')}
+function renderAdminSchedule(){const date=$('editDate').value,grade=$('editGrade').value,key=activeClassRoom+'|'+date+'|'+grade;editRows=clone(data.examDrafts?.[key]||data.exams.filter(x=>x.date===date&&x.grade===grade).sort((a,b)=>a.start.localeCompare(b.start)));paintEditor()}
+function paintEditor(){ $('examEditor').innerHTML=editRows.length?editRows.map((e,i)=>`<tr><td><input type="time" data-i="${i}" data-f="start" value="${esc(e.start)}"></td><td><input type="time" data-i="${i}" data-f="end" value="${esc(e.end)}"></td><td><input data-i="${i}" data-f="subject" value="${esc(e.subject)}" placeholder="科目"></td><td><input data-i="${i}" data-f="note" value="${esc(e.note||'')}" placeholder="選填"></td><td><button class="btn red" onclick="removeExam(${i})">移除</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">目前沒有考程，點選「新增考試」開始編輯。</td></tr>';$('examEditor').querySelectorAll('input').forEach(x=>x.addEventListener('input',()=>{editRows[+x.dataset.i][x.dataset.f]=x.value;autoSaveExamDraft()}))}
+function addExam(){editRows.push({date:$('editDate').value,grade:$('editGrade').value,start:'08:20',end:'09:30',subject:'',note:''});paintEditor();autoSaveExamDraft()}
+function removeExam(i){editRows.splice(i,1);paintEditor();autoSaveExamDraft()}
+
+/* V1.15 autosave: incomplete schedule rows remain as drafts until valid. */
+function autoSaveExamDraft(){
+ const date=$('editDate')?.value,grade=$('editGrade')?.value;
+ if(!date||!grade)return;
+ data.examDrafts??={};const key=activeClassRoom+'|'+date+'|'+grade;
+ data.examDrafts[key]=clone(editRows);
+ const valid=editRows.every(x=>x.subject?.trim()&&x.start&&x.end&&x.end>x.start);
+ if(valid){
+  data.exams=data.exams.filter(x=>x.date!==date||x.grade!==grade).concat(editRows.map(x=>({...x,date,grade,subject:x.subject.trim()})));
+  delete data.examDrafts[key];
+  selectedDate=date;selectedGrade=data.grade=grade;
+ }
+ save();
+}
+function autoSaveAttendanceForm(){
+ const d=$('attDate')?.value,g=$('attGrade')?.value,r=$('attRoom')?.value;
+ if(!d||!g||!r)return;
+ const ex=Number($('attExpected').value),ac=Number($('attActual').value);
+ const key=attKey(d,g,r);
+ data.attendanceDrafts??={};
+ data.attendanceDrafts[key]={expected:$('attExpected').value,actual:$('attActual').value,note:$('attNote').value};
+ if(Number.isInteger(ex)&&Number.isInteger(ac)&&ex>=0&&ac>=0&&ac<=ex&&ex<=500){
+  data.attendance[key]={expected:ex,actual:ac,note:$('attNote').value.trim()};
+  delete data.attendanceDrafts[key];
+  renderAttendance();
+ }
+ save();
+}
+function autoSaveSeatRule(){
+ if(!$('seatCols')||$('seatRoomName')?.value.trim()!==selectedRoom)return;
+ const cfg=readSeatConfig();
+ data.seatRuleDrafts??={};data.seatRuleDrafts[selectedRoom]=clone(cfg);
+ if(cfg.cols>=1&&cfg.cols<=12&&cfg.rows>=1&&cfg.rows<=12&&cfg.start>=1&&cfg.step>=1&&cfg.offset>=0&&cfg.offset<cfg.rows&&(!cfg.skip||/^([1-9]\d*\s*[-,，、:]\s*[1-9]\d*\s*[;；\n ]*)+$/.test(cfg.skip))){
+  data.rooms[selectedRoom]=cfg;
+  delete data.seatRuleDrafts[selectedRoom];
+  previewSeats();
+ }
+ save();
+}
+function bindAutoSaveInputs(){
+ const notice=$('noticesInput');
+ if(notice)notice.addEventListener('input',()=>{data.notices=notice.value.split('\n').map(x=>x.trim()).filter(Boolean);save()});
+ const title=$('settingTitle');
+ if(title)title.addEventListener('input',()=>{data.title=title.value;save()});
+ const grade=$('settingGrade');
+ if(grade)grade.addEventListener('change',()=>{selectedGrade=data.grade=grade.value;save()});
+ const room=$('settingRoom');
+ if(room)room.addEventListener('change',()=>{switchClassRoom(room.value);loadSettings();renderBoard()});
+ const att=$('paneAttendance');
+ if(att)att.addEventListener('input',e=>{if(['attExpected','attActual','attNote'].includes(e.target?.id))autoSaveAttendanceForm()});
+ const seat=$('paneSeat');
+ if(seat)seat.addEventListener('input',e=>{if(e.target?.id?.startsWith('seat')&&e.target.id!=='seatRoomName')autoSaveSeatRule()});
+ if(seat)seat.addEventListener('change',e=>{if(e.target?.id?.startsWith('seat')&&e.target.id!=='seatRoomName')autoSaveSeatRule()});
+}
+document.addEventListener('DOMContentLoaded',bindAutoSaveInputs);
+
+function saveExams(){const date=$('editDate').value,grade=$('editGrade').value;if(!date)return toast('請先選擇日期');if(editRows.some(e=>!e.subject.trim()||!e.start||!e.end||e.end<=e.start))return toast('請填寫科目及正確起訖時間');data.exams=data.exams.filter(x=>x.date!==date||x.grade!==grade).concat(editRows.map(e=>({...e,date,grade,subject:e.subject.trim()})));delete data.examDrafts?.[activeClassRoom+'|'+date+'|'+grade];selectedDate=date;selectedGrade=data.grade=grade;save();toast('考程已自動儲存並更新白板')}
 function clearDay(){if(!confirm('確定清除此日期、年段的考程嗎？'))return;editRows=[];saveExams();paintEditor()}
-function copyPreviousDay(){const date=$('editDate').value,grade=$('editGrade').value;const prev=[...new Set(data.exams.filter(x=>x.grade===grade&&x.date<date).map(x=>x.date))].sort().at(-1);if(!prev)return toast('找不到較早的同年段考程');editRows=clone(data.exams.filter(x=>x.date===prev&&x.grade===grade)).map(x=>({...x,date}));paintEditor();toast(`已載入 ${prev} 考程，請確認科目後儲存`)}
+function copyPreviousDay(){const date=$('editDate').value,grade=$('editGrade').value;const prev=[...new Set(data.exams.filter(x=>x.grade===grade&&x.date<date).map(x=>x.date))].sort().at(-1);if(!prev)return toast('找不到較早的同年段考程');editRows=clone(data.exams.filter(x=>x.date===prev&&x.grade===grade)).map(x=>({...x,date}));paintEditor();autoSaveExamDraft();toast(`已從 ${prev} 複製並自動儲存草稿`)}
 function loadSeatForm(){const cfg=data.rooms[selectedRoom]||SAMPLE.rooms['知足班'];$('seatRoomName').value=selectedRoom;for(const x of ['cols','rows','start','order','pattern'])$('seat'+x[0].toUpperCase()+x.slice(1)).value=cfg[x];for(const [id,key,defaultValue] of [['seatCorner','corner','front-left'],['seatStep','step',1],['seatLimit','limit',''],['seatSkip','skip',''],['seatPrefix','prefix',''],['seatOffset','offset',0]])$(id).value=cfg[key]??defaultValue;$('seatReverse').checked=!!cfg.reverse;$('seatPreview').textContent=`目前預覽班級：${selectedRoom}`;previewSeats()}
 function readSeatConfig(){return {cols:+$('seatCols').value,rows:+$('seatRows').value,start:+$('seatStart').value,order:$('seatOrder').value,pattern:$('seatPattern').value,corner:$('seatCorner').value,step:+$('seatStep').value||1,limit:$('seatLimit').value===''?'':+$('seatLimit').value,skip:$('seatSkip').value.trim(),prefix:$('seatPrefix').value.trim(),offset:+$('seatOffset').value||0,reverse:$('seatReverse').checked}}
 function previewSeats(){const cfg=readSeatConfig();if(cfg.cols<1||cfg.rows<1)return;const result=seatCells(cfg);$('seatPreview').textContent=`即時預覽：${result.nums.size} 個安排座位／${cfg.cols*cfg.rows} 個位置（灰格為保留或不使用）`;$('seatMiniPreview').style.gridTemplateColumns=`repeat(${result.cols},minmax(0,1fr))`;$('seatMiniPreview').innerHTML=Array.from({length:result.cols*result.rows},(_,i)=>{const n=result.nums.get(`${Math.floor(i/result.cols)},${i%result.cols}`);return `<div class="seat ${n==null?'empty':''}">${n==null?'—':esc(n)}</div>`}).join('')}
@@ -439,7 +496,7 @@ function saveSeats(){const room=$('seatRoomName').value.trim();if(!room)return t
 function resetSeats(){data.rooms[selectedRoom]={cols:6,rows:5,start:1,order:'row',pattern:'normal'};save();loadSeatForm();renderBoard();toast('已恢復預設座位')}
 function saveNotices(){data.notices=$('noticesInput').value.split('\n').map(x=>x.trim()).filter(Boolean);save();toast('注意事項已儲存')}
 function loadSettings(){$('settingTitle').value=data.title;$('settingGrade').value=data.grade;fillSelect($('settingRoom'),Object.keys(data.rooms),data.room)}
-function saveSettings(){const room=$('settingRoom').value;if(room!==activeClassRoom)switchClassRoom(room);data.title=$('settingTitle').value.trim()||'段考時程';selectedGrade=data.grade=$('settingGrade').value;save();renderBoard();toast('本班設定已自動儲存')}
+function saveSettings(){const room=$('settingRoom').value;if(room!==activeClassRoom){switchClassRoom(room);loadSettings();renderBoard();return}data.title=$('settingTitle').value.trim()||'段考時程';selectedGrade=data.grade=$('settingGrade').value;save();renderBoard();toast('本班設定已自動儲存')}
 function addRoom(){const box=$('newRoomName');const room=(box?.value||'').trim();if(!room)return toast('請先輸入班級或教室名稱');if(data.rooms[room])return toast('選單已有此名稱，請直接選擇');data.rooms[room]=clone(data.rooms[selectedRoom]||SAMPLE.rooms['知足班']);switchClassRoom(room);box.value='';loadSettings();renderBoard();toast('已新增「'+room+'」，此班設定與其他班級獨立')}
 function download(name,contents,mime){const blob=new Blob([contents],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 
@@ -547,7 +604,7 @@ function attKey(date=selectedDate,grade=selectedGrade,room=selectedRoom){return 
 function attData(key=attKey()){return data.attendance[key]||{expected:0,actual:0,note:''}}
 function renderAttendance(){let a=attData();$('expectedDisplay').textContent=a.expected;$('actualDisplay').textContent=a.actual;$('absentDisplay').textContent=Math.max(0,a.expected-a.actual);$('absenceNoteDisplay').textContent=a.note?'缺席備註：'+a.note:(data.attendance[attKey()]?'缺席備註：無':'尚未登記人數，請至後台填寫')}
 function initAttendanceForm(){const date=$('attDate'),grade=$('attGrade'),room=$('attRoom');date.value=selectedDate;grade.value=selectedGrade;fillSelect(room,Object.keys(data.rooms),selectedRoom);loadAttendanceForm()}
-function loadAttendanceForm(){let a=attData(attKey($('attDate').value,$('attGrade').value,$('attRoom').value));$('attExpected').value=a.expected;$('attActual').value=a.actual;$('attNote').value=a.note||'';recalcAttendance()}
+function loadAttendanceForm(){const key=attKey($('attDate').value,$('attGrade').value,$('attRoom').value);let a=data.attendanceDrafts?.[key]||attData(key);$('attExpected').value=a.expected;$('attActual').value=a.actual;$('attNote').value=a.note||'';recalcAttendance()}
 function recalcAttendance(){let ex=Number($('attExpected').value),ac=Number($('attActual').value);$('attAbsent').value=Number.isFinite(ex)&&Number.isFinite(ac)?Math.max(0,ex-ac):''}
 function useBoardAttendance(){initAttendanceForm();toast('已帶入白板目前的日期、年段與教室')}
 function saveAttendance(){let ex=Number($('attExpected').value),ac=Number($('attActual').value);if(!Number.isInteger(ex)||!Number.isInteger(ac)||ex<0||ac<0||ex>500||ac>ex)return toast('人數格式有誤：實到不可大於應到，且應到不得超過 500');const key=attKey($('attDate').value,$('attGrade').value,$('attRoom').value);data.attendance[key]={expected:ex,actual:ac,note:$('attNote').value.trim()};save();renderAttendance();toast('出缺席資訊已儲存')}
