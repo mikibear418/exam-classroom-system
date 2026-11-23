@@ -567,7 +567,7 @@ async function importClassVersion(event){
  finally{input.value=''}
 }
 
-function exportJSON(){download('exam_board_backup.json',JSON.stringify(data,null,2),'application/json;charset=utf-8')}
+function exportJSON(){captureClass();download('exam_board_backup.json',JSON.stringify(data,null,2),'application/json;charset=utf-8')}
 function restoreJSON(evt){const file=evt.target.files?.[0];if(!file)return;file.text().then(s=>{const d=JSON.parse(s);if(!Array.isArray(d.exams)||!d.rooms||!Array.isArray(d.notices))throw Error('備份格式不符');data=d;ensureExtras();selectedGrade=d.grade;selectedRoom=d.room;selectedDate=d.exams[0]?.date||demoDate;reloadClassProfilesAfterRestore();save();loadSettings();renderBoard();toast('備份已還原')}).catch(e=>toast('無法還原：'+e.message));evt.target.value=''}
 function resetAll(){if(!confirm('確定清除目前瀏覽器所有班級資料並還原範例嗎？'))return;data=clone(SAMPLE);selectedDate=demoDate;selectedGrade=data.grade;selectedRoom=data.room;data.classSettings={};delete data.classDefaultProfile;ensureExtras();reloadClassProfilesAfterRestore();save();loadSettings();renderBoard();toast('已還原範例資料')}
 function downloadTemplate(){const lines=['日期,年段,科目,開始時間,結束時間,備註','2026-11-17,八年級,國文,08:20,09:30,請攜帶文具','2026-11-17,八年級,英語,09:50,10:50,包含聽力'];download('exam_import_template.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8')}
@@ -600,6 +600,9 @@ function ensureExtras(){
  data.layout.clockSize??=84;data.layout.scheduleTimeScale??=1;data.layout.scheduleSubjectScale??=1;
 }
 ensureExtras();
+// Complete a newly migrated profile after default card settings exist.
+if(!data.classDefaultProfile?.layout?.order){data.classDefaultProfile=currentClassProfile()}
+if(!data.classSettings?.[activeClassRoom]?.layout?.order){captureClass(activeClassRoom)}
 function attKey(date=selectedDate,grade=selectedGrade,room=selectedRoom){return [date,grade,room].join('|')}
 function attData(key=attKey()){return data.attendance[key]||{expected:0,actual:0,note:''}}
 function renderAttendance(){let a=attData();$('expectedDisplay').textContent=a.expected;$('actualDisplay').textContent=a.actual;$('absentDisplay').textContent=Math.max(0,a.expected-a.actual);$('absenceNoteDisplay').textContent=a.note?'缺席備註：'+a.note:(data.attendance[attKey()]?'缺席備註：無':'尚未登記人數，請至後台填寫')}
