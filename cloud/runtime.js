@@ -2,7 +2,13 @@
 (() => {
   'use strict';
   const config=window.EXAM_CLOUD_CONFIG||{};
-  const configured=config.enabled===true && /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test((config.url||'').trim()) &&
+  // Pilot entry ?cloud=test opts this browser into Google OAuth until explicitly exited.
+  // Production remains local-only while config.enabled is false.
+  const pilotKey='exam-classroom-google-pilot';
+  const pilotRequested=new URLSearchParams(window.location.search).get('cloud')==='test';
+  if(pilotRequested){try{localStorage.setItem(pilotKey,'1')}catch{}}
+  const pilotEnabled=(()=>{try{return localStorage.getItem(pilotKey)==='1'}catch{return pilotRequested}})();
+  const configured=(config.enabled===true || pilotEnabled) && /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test((config.url||'').trim()) &&
       typeof config.publishableKey==='string' && config.publishableKey.trim().length>20;
   const app=window.EXAM_APP;
   if(!app || !configured)return;
@@ -23,7 +29,7 @@
     '<div id="cloudPasswordLogin" style="display:none"><form id="cloudLogin"><label>電子郵件<input id="cloudEmail" type="email" autocomplete="username" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 10px"></label>'+
     '<label>密碼<input id="cloudPassword" type="password" autocomplete="current-password" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 14px"></label>'+
     '<button type="submit" style="background:#6359b7;color:white;border:0;border-radius:9px;padding:11px 17px;cursor:pointer">密碼登入</button><button type="button" id="cloudMagicLink" style="margin-left:8px;background:#e6e1ff;color:#463b88;border:0;border-radius:9px;padding:11px 12px;cursor:pointer">寄送 Email 登入連結</button></form></div>'+
-    '<button id="cloudGateLogout" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">切換教師帳號／登出</button><div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
+    '<button id="cloudGateLogout" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">切換教師帳號／登出</button><button id="cloudPilotExit" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">退出測試，返回原本本機白板</button><div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
     '</section>';
   document.body.appendChild(shade);
   const setGateStatus=(msg)=>{const t=document.getElementById('cloudGateStatus');if(t)t.textContent=msg;};
@@ -160,6 +166,12 @@
   const query=new URLSearchParams(window.location.search);
   const authError=query.get('error_description')||query.get('error');
   if(authError)setGateStatus('Google 登入未完成：'+authError.slice(0,200));
+  document.getElementById('cloudPilotExit').style.display=(config.enabled===true)?'none':'inline-block';
+  document.getElementById('cloudPilotExit').addEventListener('click',()=>{
+    try{localStorage.removeItem(pilotKey)}catch{}
+    // Redirect to original board without leaving a Google login gate.
+    window.location.replace(window.location.origin+window.location.pathname);
+  });
   document.getElementById('cloudGateLogout').addEventListener('click',async()=>{await db.auth.signOut();});
   document.getElementById('cloudMagicLink').addEventListener('click',async()=>{
     const email=document.getElementById('cloudEmail').value.trim();
