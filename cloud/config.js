@@ -4,7 +4,7 @@
  * publishableKey is public; NEVER put a Supabase secret/service_role key here.
  */
 window.EXAM_CLOUD_CONFIG = {
-  enabled: false,
+  enabled: true,
   url: "https://sbdygqnhawjonvdktqly.supabase.co",
   publishableKey: "sb_publishable_KE4297JKc-AZz-Rw3V4ChQ_TXbJSy6H",
   allowEmailLogin: false

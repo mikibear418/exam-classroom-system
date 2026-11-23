@@ -1,42 +1,26 @@
-# 段考監考教室系統｜Google 教師登入啟用步驟
+# Google 教師登入：正式啟用狀態
 
-## 已由系統完成
-- Supabase 專案：`sbdygqnhawjonvdktqly`
-- 前端：`cloud/runtime.js` 已提供「使用 Google 帳號登入」（`signInWithOAuth({provider:'google'})`）。
-- 前端：`cloud/config.js` 已填入專案 URL 和 **公開** publishable key，但 `enabled:false`，尚不會鎖住現有本機版。
-- 兩個待驗證教師 Email 已存在於私有的 `classroom_private.teacher_pending_invites`：
-  - `mikibear@tcsh.hlc.edu.tw` — 同步測試班，admin
-  - `mikibear418@gmail.com` — 同步測試班，editor
-- 用戶完成 Google OAuth 且 Email 經 Supabase 確認後，已有授權觸發器會自動建立 `classroom_members` 資料。
-- 資料庫 RLS 限制班級存取；未登入者無法存取資料。
+2026-11-23：網站已設定 enabled:true，allowEmailLogin:false。兩位教師 Google 登入、班級授權與跨帳號 Realtime 自動更新已由使用者完成測試。
+正式入口：https://mikibear418.github.io/exam-classroom-system/
+本機備援與原資料 JSON 匯出：https://mikibear418.github.io/exam-classroom-system/?cloud=local
 
-## Google Cloud Console：必要的人工作業
-1. 登入 https://console.cloud.google.com/ 建立或選取 Google Cloud 專案。
-2. 前往 **Google Auth Platform → Branding**，設定應用程式名稱（段考監考教室系統）、支援電子郵件等基本資料。
-3. **Audience** 選擇 **External（外部）**，因為要同時允許學校 Google 帳號和一般 Gmail 帳號登入。若應用程式仍處於 Testing，加入上述兩個 Email 作為 **Test users**。
-4. **Clients → Create client → Web application**。設定：
-   - Authorized JavaScript origins: `https://mikibear418.github.io`
-   - Authorized redirect URIs: `https://sbdygqnhawjonvdktqly.supabase.co/auth/v1/callback`
-5. 將 Google Cloud 提供的 **Client ID** 及 **Client Secret** 直接填入 Supabase Dashboard → Authentication → Providers → Google 並啟用。
-   - https://supabase.com/dashboard/project/sbdygqnhawjonvdktqly/auth/providers
-   - Google Client Secret **只放在 Supabase Dashboard**，不要放進 GitHub、聊天或網頁程式。
-6. Supabase Dashboard → Authentication → URL Configuration：
-   - Site URL: `https://mikibear418.github.io/exam-classroom-system/`
-   - Redirect URLs 加入相同網址，確保末尾 / 正確。
-   - https://supabase.com/dashboard/project/sbdygqnhawjonvdktqly/auth/url-configuration
+## 授權
 
-## 將 Google 登入正式啟用
-上述步驟完成且 Google Provider 可以正常使用後，編輯 GitHub `cloud/config.js`：
-`enabled: false` → `enabled: true`。
-此時原本的本機白板會切換為教師登入頁；**未完成 Google Provider 前不要啟用**。
-`allowEmailLogin: false` 請保持原樣，避免不必要的 Email SMTP 流程。
+登入後只開放 classroom_members 已授權的班級。待驗證邀請保存在私有 schema，驗證 Email 的 Auth 觸發器加入成員。
+網站沒有任意加入班級或提高角色的功能。教師 Email 不作為前端授權依據。
 
-## 測試（目前尚未執行）
-1. 用學校 Google 帳號 `mikibear@tcsh.hlc.edu.tw` 登入，應看到「同步測試班」admin。
-2. 用 `mikibear418@gmail.com` 在另一台電腦或獨立瀏覽器登入，應看到 editor。
-3. 第一位老師建立無學生姓名的測試考程；第二位確認雲端同步更新。
-4. 驗證未授權的第三個 Google 帳號不能讀取班級資料。
-5. 驗證兩位老師衝突修改時不會無聲覆蓋。
-6. 實際確認工作流程及權限無誤，才能匯入真實學生資料。
+## Google 與 Supabase 設定參考
 
-備註：這個階段只完成前端程式與 Supabase 資料庫準備；**Google Cloud OAuth 客戶端與 Supabase Provider 尚未核驗已設定**，跨裝置登入同步也尚未完成測試。
+- Google OAuth 類型：Web application。
+- JavaScript origin：https://mikibear418.github.io
+- Google redirect URI：https://sbdygqnhawjonvdktqly.supabase.co/auth/v1/callback
+- Supabase Site URL 與 Redirect URLs：https://mikibear418.github.io/exam-classroom-system/
+- Client Secret 只存於 Supabase Google Provider 設定，禁止放入 GitHub 或前端。
+- 已有實際登入成功紀錄；本次未重新核對 Google Audience 的 Testing／Production 狀態或控制台回傳網址欄位。若仍為 Testing，新教師需要加入 Test users，仍須另行取得班級授權。
+
+## 備份與衝突
+
+原本本機資料不會自動遷移。先在原瀏覽器下載本班 JSON，再登入已授權的同名雲端班級載入。
+衝突時先匯出目前班級 JSON，再重新同步。完整本機系統備份只在本機版還原。
+
+完整部署與授權說明見 SETUP.md。

@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const config=window.EXAM_CLOUD_CONFIG||{};
+  if(!window.EXAM_CLOUD_ACTIVE)return;
   // Pilot entry ?cloud=test opts this browser into Google OAuth until explicitly exited.
   // Production remains local-only while config.enabled is false.
   const pilotKey='exam-classroom-google-pilot';
@@ -29,9 +30,11 @@
     '<div id="cloudPasswordLogin" style="display:none"><form id="cloudLogin"><label>電子郵件<input id="cloudEmail" type="email" autocomplete="username" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 10px"></label>'+
     '<label>密碼<input id="cloudPassword" type="password" autocomplete="current-password" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 14px"></label>'+
     '<button type="submit" style="background:#6359b7;color:white;border:0;border-radius:9px;padding:11px 17px;cursor:pointer">密碼登入</button><button type="button" id="cloudMagicLink" style="margin-left:8px;background:#e6e1ff;color:#463b88;border:0;border-radius:9px;padding:11px 12px;cursor:pointer">寄送 Email 登入連結</button></form></div>'+
-    '<button id="cloudGateLogout" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">切換教師帳號／登出</button><button id="cloudPilotExit" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">退出測試，返回原本本機白板</button><div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
+    '<button id="cloudGateLogout" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">切換教師帳號／登出</button><button id="cloudPilotExit" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">開啟此裝置本機版／JSON 備份</button><div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
     '</section>';
   document.body.appendChild(shade);
+  document.documentElement.classList.remove('cloud-booting');
+  document.querySelector('.topbar .status').textContent='● Google 教師雲端模式';
   const setGateStatus=(msg)=>{const t=document.getElementById('cloudGateStatus');if(t)t.textContent=msg;};
   const shell=document.querySelector('.shell');
   if(shell)shell.style.visibility='hidden'; // prevent exposing student data while logged out
@@ -42,7 +45,7 @@
     '<select id="cloudRoom" aria-label="切換已授權班級" style="padding:7px;border-radius:9px;border:1px solid #a7aed0"></select>'+
     '<button id="cloudRefresh" class="btn" title="重新下載雲端資料">↻ 同步</button>'+
     '<button id="cloudUpload" class="btn" title="第一次將本班本機資料建立到雲端">↑ 初始化本班</button>'+
-    '<button id="cloudSignOut" class="btn">登出</button>';
+    '<button id="cloudSignOut" class="btn">登出</button><a href="?cloud=local" class="btn">本機版／備份</a>';
   document.querySelector('.nav')?.appendChild(toolbar);
   const status=(text)=>{document.getElementById('cloudStatus').textContent=text;};
   const membership=(room)=>memberships.find(m=>m.room===room);
@@ -55,7 +58,9 @@
   };
   async function loadRemote(room,force=false){
     if(!user||!membership(room))return;
+    const serial=sessionSerial;
     const row=await queryRow(room);
+    if(serial!==sessionSerial||!user||!membership(room))return;
     if(!row){revisions.set(room,0);verified.add(room);if(app.currentRoom()===room)app.initializeEmptyRoom(room);status('此班尚未建立雲端資料，顯示空白班級以保護既有本機名冊');return;}
     if(dirty.has(room) && !force){status('本機有未同步修改，請先處理衝突');return;}
     revisions.set(room,row.revision);
@@ -95,8 +100,11 @@
     try{await loadRemote(room)}finally{loadingRoom=false;}
   }
   async function activate(session){
-    if(!session?.user){user=null;memberships=[];verified.clear();pending.clear();dirty.clear();if(sub){db.removeChannel(sub);sub=null;}gate(true,'請登入後使用');return;}
-    user=session.user;const serial=++sessionSerial;setGateStatus('正在確認班級權限…');gate(true);
+    const serial=++sessionSerial;
+    for(const t of timers.values())clearTimeout(t);
+    timers.clear();
+    if(!session?.user){user=null;activeRoom=null;memberships=[];revisions.clear();verified.clear();pending.clear();dirty.clear();if(sub){db.removeChannel(sub);sub=null;}gate(true,'請登入後使用');return;}
+    user=session.user;setGateStatus('正在確認班級權限…');gate(true);
     try{
       await reloadMemberships();
       if(serial!==sessionSerial)return;
@@ -136,9 +144,10 @@
   }
   window.EXAM_CLOUD_SYNC={
     rooms(){return memberships.map(m=>m.room)},
+    canWrite(room){return !!user&&canWrite(room)&&verified.has(room)&&!loadingRoom},
     canSwitch(room){return !!membership(room)},
     localChanged(room,payload){
-      if(!user||!membership(room)||!verified.has(room)||!payload)return;
+      if(!user||loadingRoom||!membership(room)||!verified.has(room)||!payload)return;
       if(!canWrite(room)){status('此班為唯讀權限，無法儲存修改');return;}
       dirty.add(room);pending.set(room,payload);
       status('正在儲存到雲端…');planSave(room);
@@ -166,11 +175,11 @@
   const query=new URLSearchParams(window.location.search);
   const authError=query.get('error_description')||query.get('error');
   if(authError)setGateStatus('Google 登入未完成：'+authError.slice(0,200));
-  document.getElementById('cloudPilotExit').style.display=(config.enabled===true)?'none':'inline-block';
+  document.getElementById('cloudPilotExit').style.display='inline-block';
   document.getElementById('cloudPilotExit').addEventListener('click',()=>{
     try{localStorage.removeItem(pilotKey)}catch{}
     // Redirect to original board without leaving a Google login gate.
-    window.location.replace(window.location.origin+window.location.pathname);
+    window.location.replace(window.location.origin+window.location.pathname+'?cloud=local');
   });
   document.getElementById('cloudGateLogout').addEventListener('click',async()=>{await db.auth.signOut();});
   document.getElementById('cloudMagicLink').addEventListener('click',async()=>{
