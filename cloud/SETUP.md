@@ -25,3 +25,12 @@ insert into public.classroom_members(room,user_id,role) values ('知足班','實
 - 確認學校學生個資管理、帳號停用、資料刪除及備份程序。
 
 未實際建立 Supabase 專案、完成 SQL 設定與測試之前，不能視為雲端版已正式上線。
+## 已確認的實際部署狀態（2026-11-23）
+- Supabase 專案：sbdygqnhawjonvdktqly（運作正常）。
+- classroom_members 與 classroom_state 已正式建立，並啟用 RLS。
+- classroom_private.can_access 在非公開 schema 執行成員授權檢查。
+- classroom_state 已加入 supabase_realtime 發布；資料表修訂版 revision 用於防止競爭更新。
+- Supabase 安全檢查：目前 0 則警告。未登入者不能讀取班級資料，一般教師無法直接新增班級授權。
+- **目前教師 Auth 帳號 0、班級成員授權 0、班級資料 0，因此「兩台裝置/兩位老師」的端到端測試還無法執行。**
+- 為避免使現有本機白板突然被登入畫面鎖住，公開網站 cloud/config.js 仍保留空白；須先建立教師帳號、授權班級，再填入公開 URL 與 publishable key 啟用雲端模式。
+- GitHub 不可儲存真正的學生資料、教師密碼或 Supabase secret key。
