@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const config=window.EXAM_CLOUD_CONFIG||{};
-  const configured=/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test((config.url||'').trim()) &&
+  const configured=config.enabled===true && /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test((config.url||'').trim()) &&
       typeof config.publishableKey==='string' && config.publishableKey.trim().length>20;
   const app=window.EXAM_APP;
   if(!app || !configured)return;
@@ -19,9 +19,10 @@
   shade.innerHTML='<section style="width:min(480px,100%);background:white;border:1px solid #ccd4e8;padding:24px;border-radius:20px;box-shadow:0 16px 70px #21335c2a">'+
     '<h2 style="margin:0 0 8px">🏫 段考監考教室 · 教師登入</h2>'+
     '<p style="line-height:1.6;color:#5d6680;margin:0 0 12px">請使用學校核發的教師帳號。只有獲授權的班級可開啟及修改。</p>'+
-    '<form id="cloudLogin"><label>電子郵件<input id="cloudEmail" type="email" autocomplete="username" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 10px"></label>'+
+    '<button id="cloudGoogleLogin" type="button" style="display:block;width:100%;padding:14px;margin:14px 0;border:1px solid #c9d0e5;background:white;color:#253052;border-radius:12px;font-weight:700;cursor:pointer">使用 Google 帳號登入</button>'+
+    '<div id="cloudPasswordLogin" style="display:none"><form id="cloudLogin"><label>電子郵件<input id="cloudEmail" type="email" autocomplete="username" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 10px"></label>'+
     '<label>密碼<input id="cloudPassword" type="password" autocomplete="current-password" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 14px"></label>'+
-    '<button type="submit" style="background:#6359b7;color:white;border:0;border-radius:9px;padding:11px 17px;cursor:pointer">密碼登入</button><button type="button" id="cloudMagicLink" style="margin-left:8px;background:#e6e1ff;color:#463b88;border:0;border-radius:9px;padding:11px 12px;cursor:pointer">寄送 Email 登入連結</button></form>'+
+    '<button type="submit" style="background:#6359b7;color:white;border:0;border-radius:9px;padding:11px 17px;cursor:pointer">密碼登入</button><button type="button" id="cloudMagicLink" style="margin-left:8px;background:#e6e1ff;color:#463b88;border:0;border-radius:9px;padding:11px 12px;cursor:pointer">寄送 Email 登入連結</button></form></div>'+
     '<button id="cloudGateLogout" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">切換教師帳號／登出</button><div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
     '</section>';
   document.body.appendChild(shade);
@@ -143,6 +144,22 @@
       try{await openRoom(room);}catch(e){status(e.message);}
     }
   };
+  document.getElementById('cloudGoogleLogin').addEventListener('click',async()=>{
+    const btn=document.getElementById('cloudGoogleLogin');
+    btn.disabled=true;
+    setGateStatus('正在轉往 Google 安全登入…');
+    const {error}=await db.auth.signInWithOAuth({
+      provider:'google',
+      options:{redirectTo:window.location.origin+window.location.pathname}
+    });
+    if(error){btn.disabled=false;setGateStatus('Google 登入失敗：'+error.message)}
+  });
+  // The older password and email-link flows remain available for migration only.
+  // Never enable them in Google-only mode unless explicitly approved by the school.
+  if(config.allowEmailLogin===true)document.getElementById('cloudPasswordLogin').style.display='block';
+  const query=new URLSearchParams(window.location.search);
+  const authError=query.get('error_description')||query.get('error');
+  if(authError)setGateStatus('Google 登入未完成：'+authError.slice(0,200));
   document.getElementById('cloudGateLogout').addEventListener('click',async()=>{await db.auth.signOut();});
   document.getElementById('cloudMagicLink').addEventListener('click',async()=>{
     const email=document.getElementById('cloudEmail').value.trim();
