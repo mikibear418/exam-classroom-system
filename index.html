@@ -1101,6 +1101,27 @@ window.EXAM_APP={
    seatRuleDraft:clone(data.seatRuleDrafts?.[room]||{})
   };
  },
+ initializeEmptyRoom(room){
+  window.__examCloudApplying=true;
+  try {
+   data.rooms[room]=clone(SAMPLE.rooms['知足班']);
+   data.classSettings??={};
+   data.classSettings[room]={
+    title:'段考監考教室',grade:'八年級',date:demoDate,
+    exams:[],notices:[],layout:clone(data.classDefaultProfile?.layout||data.layout),theme:'lavender'
+   };
+   data.roster=(data.roster||[]).filter(st=>st.room!==room);
+   data.seatPlans??={};data.planOptions??={};data.planWarnings??={};
+   delete data.seatPlans[room];delete data.planOptions[room];delete data.planWarnings[room];
+   for(const key of ['studentStates','attendance','attendanceDrafts']){
+    data[key]??={};
+    for(const k of Object.keys(data[key]))if(k.split('|')[2]===room)delete data[key][k];
+   }
+   data.examDrafts??={};
+   for(const key of Object.keys(data.examDrafts))if(key.startsWith(room+'|'))delete data.examDrafts[key];
+   loadClassProfile(room);renderBoard();
+  }finally{window.__examCloudApplying=false}
+ },
  cacheSnapshot(room,payload){cloudCachedRooms.set(room,payload)},
  showBoard(){showMode('board')},
  applySnapshot(room,payload){
