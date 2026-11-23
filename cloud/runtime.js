@@ -22,7 +22,7 @@
     '<form id="cloudLogin"><label>電子郵件<input id="cloudEmail" type="email" autocomplete="username" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 10px"></label>'+
     '<label>密碼<input id="cloudPassword" type="password" autocomplete="current-password" required style="box-sizing:border-box;display:block;width:100%;padding:10px;margin:5px 0 14px"></label>'+
     '<button type="submit" style="background:#6359b7;color:white;border:0;border-radius:9px;padding:11px 17px;cursor:pointer">登入雲端系統</button></form>'+
-    '<div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
+    '<button id="cloudGateLogout" type="button" style="border:0;background:none;color:#6558b2;padding:10px 0;cursor:pointer">切換教師帳號／登出</button><div id="cloudGateStatus" role="status" style="color:#6a5078;font-size:14px;margin-top:12px"></div>'+
     '</section>';
   document.body.appendChild(shade);
   const setGateStatus=(msg)=>{const t=document.getElementById('cloudGateStatus');if(t)t.textContent=msg;};
@@ -97,7 +97,7 @@
     }catch(e){gate(true,'連線或權限設定錯誤：'+e.message);}
   }
   async function savePending(room){
-    if(!user||!canWrite(room)||!verified.has(room)||!dirty.has(room)||loadingRoom)return;
+    if(!user||!canWrite(room)||!verified.has(room)||!dirty.has(room))return;
     const payload=pending.get(room);
     if(!payload)return;
     let current=Number(revisions.get(room)||0);
@@ -123,6 +123,8 @@
     timers.set(room,setTimeout(()=>{timers.delete(room);void savePending(room);},850));
   }
   window.EXAM_CLOUD_SYNC={
+    rooms(){return memberships.map(m=>m.room)},
+    canSwitch(room){return !!membership(room)},
     localChanged(room,payload){
       if(!user||!membership(room)||!canWrite(room)||!verified.has(room)||!payload)return;
       dirty.add(room);pending.set(room,payload);
@@ -135,6 +137,7 @@
       try{await openRoom(room);}catch(e){status(e.message);}
     }
   };
+  document.getElementById('cloudGateLogout').addEventListener('click',async()=>{await db.auth.signOut();});
   document.getElementById('cloudLogin').addEventListener('submit',async(e)=>{
     e.preventDefault();setGateStatus('登入中…');
     const email=document.getElementById('cloudEmail').value.trim();
@@ -156,6 +159,6 @@
     if(!confirm('確定要將「'+room+'」的本機設定與名冊首次上傳到雲端嗎？請先確認沒有真實學生資料外洩風險。'))return;
     pending.set(room,app.serializeRoom(room));dirty.add(room);await savePending(room);
   });
-  db.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{void activate(session)},0);});
+  db.auth.onAuthStateChange((event,session)=>{if(['INITIAL_SESSION','SIGNED_IN','SIGNED_OUT'].includes(event))setTimeout(()=>{void activate(session)},0);});
   void db.auth.getSession().then(({data})=>activate(data.session)).catch(e=>gate(true,e.message));
 })();
