@@ -34,3 +34,11 @@ insert into public.classroom_members(room,user_id,role) values ('知足班','實
 - **目前教師 Auth 帳號 0、班級成員授權 0、班級資料 0，因此「兩台裝置/兩位老師」的端到端測試還無法執行。**
 - 為避免使現有本機白板突然被登入畫面鎖住，公開網站 cloud/config.js 仍保留空白；須先建立教師帳號、授權班級，再填入公開 URL 與 publishable key 啟用雲端模式。
 - GitHub 不可儲存真正的學生資料、教師密碼或 Supabase secret key。
+
+
+## 雙教師測試準備（2026-11-23）
+- 已在 Supabase 私有 schema `classroom_private.teacher_pending_invites` 建立兩位教師的 Email 待驗證授權，角色分別為 `admin`、`editor`，目標均為「同步測試班」，不含學生個資。公開 GitHub 不儲存 Email。
+- 已部署 `auth.users` 郵件驗證完成後的觸發器：比對已驗證 Email，自動加入 `classroom_members`；未經驗證的信箱不會獲得班級權限。
+- 已加入網頁免密碼電子郵件登入按鈕，正式啟用前必須先在 Supabase Auth → URL Configuration 將 `https://mikibear418.github.io/exam-classroom-system/` 設為允許的回傳網址。
+- **Auth Users 仍沒有教師帳號，尚未寄發正式邀請郵件，也尚未啟用網站的雲端設定。** 請由管理者在 Supabase Auth → Users → Invite user 邀請兩位老師，或在 URL Configuration 設定後使用網頁 Email 登入流程。
+- 連接前端必須在 `cloud/config.js` 設定專案 URL 與**公開** publishable key；且完成雙帳號登入、兩台設備同步、唯讀權限與衝突測試，再宣告正式啟用。
