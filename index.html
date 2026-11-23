@@ -252,7 +252,7 @@ html[data-theme] button:focus-visible,html[data-theme] select:focus-visible,html
 </style></head>
 <body>
 <div class="shell">
-<header class="topbar"><div class="brand"><div class="logo">▦</div><div><b>段考監考教室系統</b><small>V1.16 · 教師登入・雲端同步</small></div></div><div class="nav"><label class="theme-control" for="themeSelect"><span>主題配色</span><select id="themeSelect" aria-label="主題配色" onchange="applyTheme(this.value)"><option value="lavender">紫藤</option><option value="sky">晴空</option><option value="mint">薄荷</option><option value="amber">暖杏</option><option value="rose">櫻花</option><option value="slate">岩灰</option></select></label><span class="status">● 自動儲存已啟用</span><button class="btn active" id="boardNav" onclick="showMode('board')">▣ 電子白板</button><button class="btn" id="adminNav" onclick="showMode('admin')">⚙ 後台管理</button><div class="class-file-actions"><span id="autosaveLabel" class="status" title="自動存至此裝置此瀏覽器">✓ 已自動儲存</span><button class="btn" onclick="exportClassVersion()" title="下載目前班級資料檔">💾 儲存本班版本</button><label class="btn class-file-picker">📂 載入班級版本<input type="file" accept=".json,application/json" class="visually-hidden" onchange="importClassVersion(event)"></label></div><button class="btn ghost" onclick="toggleFull()">⛶ 全螢幕</button></div></header>
+<header class="topbar"><div class="brand"><div class="logo">▦</div><div><b>段考監考教室系統</b><small>V1.16 · 教師登入・雲端同步</small></div></div><div class="nav"><label class="theme-control" for="themeSelect"><span>主題配色</span><select id="themeSelect" aria-label="主題配色" onchange="applyTheme(this.value)"><option value="lavender">紫藤</option><option value="sky">晴空</option><option value="mint">薄荷</option><option value="amber">暖杏</option><option value="rose">櫻花</option><option value="slate">岩灰</option></select></label><span class="status">● 本機自動儲存｜雲端待設定</span><button class="btn active" id="boardNav" onclick="showMode('board')">▣ 電子白板</button><button class="btn" id="adminNav" onclick="showMode('admin')">⚙ 後台管理</button><div class="class-file-actions"><span id="autosaveLabel" class="status" title="自動存至此裝置此瀏覽器">✓ 已自動儲存</span><button class="btn" onclick="exportClassVersion()" title="下載目前班級資料檔">💾 儲存本班版本</button><label class="btn class-file-picker">📂 載入班級版本<input type="file" accept=".json,application/json" class="visually-hidden" onchange="importClassVersion(event)"></label></div><button class="btn ghost" onclick="toggleFull()">⛶ 全螢幕</button></div></header>
 <div id="boardView">
 <div class="study-mascots" aria-hidden="true"><img src="assets/boy.webp" alt=""><img src="assets/girl.webp" alt=""></div>
 <section class="board-head"><div class="heading-main"><div><div class="eyebrow">EXAMINATION SCHEDULE</div><h1 id="schoolTitle">115 學年度・第 2 次定期評量</h1><div class="subtitle" id="roomTitle">八年級</div></div><span class="classroom-tag" id="classroomTag">🏫 知足班</span></div></section>
@@ -387,7 +387,7 @@ function silentPersist(){
  if(status)status.textContent='✓ 已自動儲存 · '+activeClassRoom;
 }
 
-function save(){try{captureClass();if(!window.EXAM_CLOUD_CONFIG?.url)localStorage.setItem(STORE,JSON.stringify(data));autoSaveIndicator();if(!window.__examCloudApplying&&!window.__examCloudSwitching)window.EXAM_CLOUD_SYNC?.localChanged(activeClassRoom,window.EXAM_APP?.serializeRoom(activeClassRoom))}catch{toast('儲存失敗，可能已超出瀏覽器容量')}}
+function save(){try{captureClass();if(!(window.EXAM_CLOUD_CONFIG?.url&&window.EXAM_CLOUD_CONFIG?.publishableKey))localStorage.setItem(STORE,JSON.stringify(data));autoSaveIndicator();if(!window.__examCloudApplying&&!window.__examCloudSwitching)window.EXAM_CLOUD_SYNC?.localChanged(activeClassRoom,window.EXAM_APP?.serializeRoom(activeClassRoom))}catch{toast('儲存失敗，可能已超出瀏覽器容量')}}
 function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('toast').classList.remove('show'),3100)}
 function showMode(next){mode=next;$('boardView').classList.toggle('hidden',next!=='board');$('adminView').classList.toggle('hidden',next!=='admin');$('boardNav').classList.toggle('active',next==='board');$('adminNav').classList.toggle('active',next==='admin');if(next==='board')renderBoard();else openTab('schedule')}
 function openTab(tab){for(const x of ['schedule','seat','notice','attendance','layout','import','settings']){$('pane'+x[0].toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==tab);$('tab'+x[0].toUpperCase()+x.slice(1)).classList.toggle('active',x===tab)}if(tab==='schedule'){ $('editDate').value=selectedDate;$('editGrade').value=selectedGrade;renderAdminSchedule()}if(tab==='seat')loadSeatForm();if(tab==='notice'){$('noticesInput').value=data.notices.join('\n');syncNoticeSlider()};if(tab==='settings')loadSettings();if(tab==='attendance')initAttendanceForm();if(tab==='layout')paintLayoutControls()}
@@ -1102,6 +1102,7 @@ window.EXAM_APP={
   };
  },
  cacheSnapshot(room,payload){cloudCachedRooms.set(room,payload)},
+ showBoard(){showMode('board')},
  applySnapshot(room,payload){
   if(!payload||payload.format!=='exam-classroom-cloud'||payload.version!==1||!payload.profile||!Array.isArray(payload.roster))throw Error('雲端班級資料格式有誤');
   window.__examCloudApplying=true;
