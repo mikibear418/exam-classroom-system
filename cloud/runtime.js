@@ -34,7 +34,7 @@
     '</section>';
   document.body.appendChild(shade);
   document.documentElement.classList.remove('cloud-booting');
-  document.querySelector('.topbar .status').textContent='● Google 教師雲端模式';
+  (document.getElementById('appModeStatus')||document.querySelector('.topbar .status')).textContent='● Google 教師雲端模式';
   const setGateStatus=(msg)=>{const t=document.getElementById('cloudGateStatus');if(t)t.textContent=msg;};
   const shell=document.querySelector('.shell');
   if(shell)shell.style.visibility='hidden'; // prevent exposing student data while logged out
