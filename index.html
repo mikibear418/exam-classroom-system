@@ -358,7 +358,7 @@ html[data-theme] .teacher{background:var(--theme-tint);border-color:var(--theme-
 <div class="field" style="display:none"><label>隨機種子（選填）</label><input id="seatSeed" placeholder="如 115" value="115"/></div>
 <div class="field" style="display:none"><label>九宮格限制說明</label><div class="note" style="margin:0">學生可勾選「周圍九宮格不安排他人」，或「僅與指定學生避開九宮格」，兩種條件可分開使用。</div></div>
 </div>
-<div class="actions"><button class="btn primary" onclick="downloadRosterXlsxTemplate()">⬇ Excel 名冊範本（推薦）</button><button class="btn" onclick="downloadRosterTemplate()">↓ CSV 範本（UTF-8）</button><button class="btn" onclick="addDemoRoster()">👩‍🎓 載入示範班級名冊</button><button class="btn primary" onclick="runSeatPlan()">✨ 產生班級座位表</button><button class="btn" onclick="clearSeatOverrides()">↺ 清除手動換位</button></div>
+<div class="actions"><button class="btn primary" onclick="downloadRosterXlsxTemplate()">⬇ Excel 名冊範本（推薦）</button><button class="btn" onclick="downloadRosterTemplate()">↓ CSV 範本（UTF-8）</button><button class="btn" onclick="addDemoRoster()">👩‍🎓 載入示範班級名冊</button><button class="btn primary" onclick="runSeatPlan()" title="每次點擊重新隨機安排並保留原有座位限制">✨ 隨機智慧編排（再按一次換排序）</button><button class="btn" onclick="clearSeatOverrides()">↺ 清除手動換位</button></div>
 <div class="note" id="rosterImportStatus" role="status">請先下載 Excel 範本填寫名冊，或上傳既有 Excel / CSV。</div><div class="note" id="rosterSummary">尚未匯入學生名冊。</div>
 <div class="fields"><div class="field"><label>學生條件編輯（本考場）</label><select id="ruleStudent" onchange="showStudentRules()"></select></div>
 <div class="field"><label>安排前排／後排</label><select id="ruleZone"><option value="any">不限</option><option value="front">前排（前 1/3）</option><option value="back">後排（後 1/3）</option></select></div>
@@ -904,26 +904,70 @@ function validatePlan(room,plan){let roster=roomRoster(room),ids=new Set(roster.
  for(let i=0;i<pairs.length;i++)for(let j=i+1;j<pairs.length;j++)if(!pairOK(pairs[i].s,pairs[i].pos,pairs[j].s,pairs[j].pos))violations.push(`${pairs[i].s.name} 和 ${pairs[j].s.name} 位置衝突`);
  return [...new Set(violations)];
 }
-function solveSeats(room,students,opts){const allSpots=seatsFor(room),rows=+rowCfg(room).rows||5;
+function solveSeats(room,students,opts){const allSpots=opts.strategy==='shuffle'?seededShuffle(seatsFor(room),String(opts.seed)+':spots'):seatsFor(room),rows=+rowCfg(room).rows||5;
  let ordered=orderedStudents(students,opts.strategy,opts.seed);const difficulty=s=>(rulesOf(s).fixedRow?20:0)+(rulesOf(s).fixedCol?20:0)+(rulesOf(s).noNine?15:0)+(rulesOf(s).noNeighbor?10:0)+(rulesOf(s).avoidNine?5:0)+(rulesOf(s).zone&&rulesOf(s).zone!=='any'?7:0)+(rulesOf(s).avoid?.length||0);
  ordered=ordered.map((s,i)=>({s,i})).sort((a,b)=>difficulty(b.s)-difficulty(a.s)||a.i-b.i).map(x=>x.s);
  let result={},occupied=new Map(),limit=0,best={},bestN=0;
  const budget=120000;
  function visit(idx){if(occupied.size>bestN){bestN=occupied.size;best=Object.fromEntries(occupied)}if(idx>=ordered.length)return true;if(++limit>budget)return false;
-  const s=ordered[idx];const options=allSpots.filter(pos=>frontBackOK(s,pos,rows)&&!occupied.has(pos));
+  const s=ordered[idx];const available=allSpots.filter(pos=>frontBackOK(s,pos,rows)&&!occupied.has(pos));const options=opts.strategy==='shuffle'?seededShuffle(available,String(opts.seed)+':student:'+s.id+':'+idx):available;
   for(const pos of options){let ok=true;for(const [q,id] of occupied){const other=students.find(x=>x.id===id);if(!pairOK(s,pos,other,q)){ok=false;break}}if(!ok)continue;occupied.set(pos,s.id);if(visit(idx+1))return true;occupied.delete(pos)}return false;
  }
  const success=visit(0);result=success?Object.fromEntries(occupied):best;
  const assigned=new Set(Object.values(result));let unassigned=ordered.filter(s=>!assigned.has(s.id));
  return {plan:result,unassigned,checks:limit,exhausted:limit>budget};
 }
-function runSeatPlan(){const room=$('seatRoomName').value.trim()||selectedRoom;if(room!==selectedRoom){toast('請先儲存並切換至要安排的考場');return}
- const cfg=readSeatConfig();if(cfg.cols<1||cfg.cols>12||cfg.rows<1||cfg.rows>12){toast('請先設定有效座位排數和欄數');return}
- data.rooms[room]=cfg;const roster=roomRoster(room);if(!roster.length){toast('請先匯入或新增學生名冊');return}
- const opts={strategy:$('mixedStrategy').value,seed:$('seatSeed').value};data.planOptions??={};data.planOptions[room]=opts;
- const solved=solveSeats(room,roster,opts);data.seatPlans[room]=solved.plan;data.planWarnings[room]=solved.unassigned.map(s=>`${s.className} ${s.number} ${s.name}`);
- save();paintSeatCenter();renderBoard();const message=solved.unassigned.length?`有 ${solved.unassigned.length} 位未排入；請調整條件或座位數`: `成功安排 ${roster.length} 位學生`;
- toast(message);$('planWarnings').style.display=solved.unassigned.length?'block':'none';
+// Each click samples a new layout while respecting per-student placement rules.
+let seatPlanClickCounter=0;
+function seatPlanSignature(plan){
+ return Object.entries(plan||{}).sort(([a],[b])=>a.localeCompare(b)).map(([pos,id])=>pos+'='+id).join('|');
+}
+function runSeatPlan(){
+ const room=$('seatRoomName').value.trim()||selectedRoom;
+ if(room!==selectedRoom){toast('請先儲存並切換至要安排的考場');return}
+ const cfg=readSeatConfig();
+ if(cfg.cols<1||cfg.cols>12||cfg.rows<1||cfg.rows>12){toast('請先設定有效座位排數和欄數');return}
+ data.rooms[room]=cfg;
+ const roster=roomRoster(room);
+ if(!roster.length){toast('請先匯入或新增學生名冊');return}
+ // The old fixed seed and hidden ordered strategy returned the same first valid
+ // arrangement every time. V1.18 always samples randomized valid candidates.
+ const previous=data.seatPlans?.[room]||{};
+ const previousKey=seatPlanSignature(previous);
+ const previousCount=Object.keys(previous).length;
+ const randomSeed=()=>{
+   const a=new Uint32Array(2);
+   if(window.crypto?.getRandomValues)window.crypto.getRandomValues(a);
+   else {a[0]=(Date.now()>>>0);a[1]=Math.floor(Math.random()*4294967296)}
+   return [a[0].toString(36),a[1].toString(36),++seatPlanClickCounter].join('-');
+ };
+ let selected=null, selectedKey='', bestCount=-1;
+ for(let attempt=0;attempt<8;attempt++){
+   const seed=randomSeed();
+   const candidate=solveSeats(room,roster,{strategy:'shuffle',seed});
+   const key=seatPlanSignature(candidate.plan);
+   const count=Object.keys(candidate.plan).length;
+   // Prefer assignments that include everybody and differ from the previous click.
+   if(key!==previousKey && count>bestCount){
+     selected=candidate;selectedKey=key;bestCount=count;
+   }
+   if(count===roster.length && key!==previousKey)break;
+ }
+ if(!selected || (previousCount===roster.length && bestCount<previousCount)){
+   if(previousCount===roster.length){toast('固定座位或限制條件下，暫時找不到另一種完整且合規的排序；已保留原座位');return}
+   if(!selected){toast('目前條件下無法產生不同的座位排序，請檢查固定座位與限制');return}
+ }
+ data.planOptions??={};
+ data.planOptions[room]={strategy:'shuffle',seed:randomSeed(),lastGeneratedAt:new Date().toISOString()};
+ data.seatPlans[room]=selected.plan;
+ data.planWarnings[room]=selected.unassigned.map(st=>`${st.className} ${st.number} ${st.name}`);
+ save();paintSeatCenter();renderBoard();
+ const count=Object.keys(selected.plan).length;
+ const message=selected.unassigned.length
+   ?`已換成新排序，排入 ${count}/${roster.length} 位；其餘請調整座位限制`
+   :`已產生不同的智慧座位排序（${count} 位），並自動儲存`;
+ toast(message);
+ $('planWarnings').style.display=selected.unassigned.length?'block':'none';
 }
 function paintSeatCells(container,room,mini=false){const cfg=rowCfg(room),cells=seatCells(cfg),plan=planFor(room),roster=roomRoster(room),reverse=new Map(roster.map(s=>[s.id,s]));
  container.style.gridTemplateColumns=`repeat(${cells.cols},minmax(100px,1fr))`;
