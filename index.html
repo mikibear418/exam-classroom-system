@@ -3,7 +3,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>段考監考教室系統 V1.17｜手機管理與登入修正</title>
+<title>段考監考教室系統 V1.18｜隱藏操作選項與主題座位</title>
 <script src="cloud/config.js?v=20261124-mobile2"></script>
 <script>
 (()=>{
@@ -278,17 +278,58 @@ html[data-theme] button:focus-visible,html[data-theme] select:focus-visible,html
 .class-file-actions .btn{font-size:13px;padding:8px 10px}
 .class-file-picker{cursor:pointer;display:inline-flex}
 @media(max-width:850px){.class-file-actions .btn{padding:6px 8px}}
+
+/* V1.18: floating controls and theme-aware classroom seats */
+.operations-toggle{position:fixed;right:18px;bottom:18px;z-index:1000;box-shadow:0 4px 20px #24334b33;min-height:44px}
+#operationsDialog{width:min(700px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:22px;border:1px solid var(--theme-edge);border-radius:20px;background:var(--theme-surface);color:var(--theme-ink);box-shadow:0 20px 80px #17203355;overflow:auto}
+#operationsDialog::backdrop{background:#13203977;backdrop-filter:blur(3px)}
+.operations-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.operations-heading h2{margin:0;font-size:22px}
+#operationsDialog section+section{border-top:1px solid var(--theme-edge);margin-top:18px;padding-top:14px}
+#operationsDialog h3{font-size:16px;margin:0 0 10px;color:var(--theme-accent)}
+#operationsDialog .nav,#operationsDialog .class-file-actions{display:flex;flex-wrap:wrap;gap:10px;width:100%}
+#operationsDialog .theme-control>span,#operationsDialog .status{display:inline-flex}
+#operationsDialog .theme-control{width:100%;margin:0}
+#operationsDialog .theme-control select{flex:1;max-width:none}
+#operationsDialog .selector-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;margin:0}
+#operationsDialog .selector-row select{width:100%;min-height:44px}
+#operationsDialog .modehint{display:block;grid-column:1/-1;margin:0}
+#operationsDialog .layout-toolbar{display:flex!important;flex-wrap:wrap;margin:0}
+#operationsDialog .layout-caption{width:100%}
+#operationsDialog .layout-caption span{display:block;font-size:13px;margin-top:5px}
+#operationsDialog #cloudToolbar{width:100%}
+#operationsDialog .btn{min-height:42px;white-space:normal}
+#operationsDialog #cloudStatus{display:block;width:100%;color:var(--theme-accent)!important}
+html[data-theme] .seat.student,html[data-theme] .seat.student[data-status=present]{background:var(--theme-tint);border-color:var(--theme-edge);color:var(--theme-ink)}
+html[data-theme] .seat.student .student-seat-number{color:var(--theme-accent)}
+html[data-theme] .seat.student .student-status{color:var(--theme-accent);border:1px solid currentColor;border-radius:20px;padding:2px 6px}
+html[data-theme] .seat.student[data-status=absent]{background:color-mix(in srgb,var(--theme-tint) 65%,#ffe3e3);border-color:#b74b5b;color:var(--theme-ink)}
+html[data-theme] .seat.student[data-status=late]{background:color-mix(in srgb,var(--theme-tint) 65%,#fff0cf);border-color:#a8751f;color:var(--theme-ink)}
+html[data-theme] .seat.student[data-status=leave]{background:color-mix(in srgb,var(--theme-tint) 65%,#e5e4f2);border-color:#776596;color:var(--theme-ink)}
+html[data-theme] .seat.student[data-status=absent] .student-status{color:#a32d4a}
+html[data-theme] .seat.student[data-status=late] .student-status{color:#825811}
+html[data-theme] .seat.student[data-status=leave] .student-status{color:#66527f}
+html[data-theme] .seat.empty{background:var(--theme-surface);border-color:var(--theme-edge);color:var(--theme-muted)}
+html[data-theme] .teacher{background:var(--theme-tint);border-color:var(--theme-accent);color:var(--theme-accent)}
+@media(max-width:600px){#operationsDialog{padding:16px}.operations-toggle{right:10px;bottom:10px}#operationsDialog .class-file-actions>.btn{flex:1}}
+
 </style></head>
 <body>
 <div id="cloudStartup" role="status">正在啟動教師雲端模式。若連線失敗，請重新整理或稍後重試。<br><a href="?cloud=local">開啟此裝置本機版與 JSON 備份</a><br>本機資料不會自動上傳；雲端資料不會覆寫原本的本機備份。</div>
 <div class="shell">
-<header class="topbar"><div class="brand"><div class="logo">▦</div><div><b>段考監考教室系統</b><small>V1.17 · 手機編輯修正・雲端同步</small></div></div><div class="nav"><label class="theme-control" for="themeSelect"><span>主題配色</span><select id="themeSelect" aria-label="主題配色" onchange="applyTheme(this.value)"><option value="lavender">紫藤</option><option value="sky">晴空</option><option value="mint">薄荷</option><option value="amber">暖杏</option><option value="rose">櫻花</option><option value="slate">岩灰</option></select></label><span class="status">● 本機模式｜JSON 備份</span><button class="btn active" id="boardNav" onclick="showMode('board')">▣ 電子白板</button><button class="btn" id="adminNav" onclick="showMode('admin')">⚙ 後台管理</button><div class="class-file-actions"><span id="autosaveLabel" class="status" title="自動存至此裝置此瀏覽器">✓ 已自動儲存</span><button class="btn" onclick="exportClassVersion()" title="下載目前班級資料檔">💾 儲存本班版本</button><label class="btn class-file-picker">📂 載入班級版本<input type="file" accept=".json,application/json" class="visually-hidden" onchange="importClassVersion(event)"></label></div><button class="btn ghost" onclick="toggleFull()">⛶ 全螢幕</button></div></header>
+<button id="operationsToggle" class="btn operations-toggle" type="button" aria-haspopup="dialog" aria-controls="operationsDialog" aria-expanded="false" onclick="openOperations()">☰ 操作選項</button>
+<dialog id="operationsDialog" aria-labelledby="operationsTitle">
+ <div class="operations-heading"><h2 id="operationsTitle">操作選項</h2><button class="btn" type="button" aria-label="關閉操作選項" onclick="closeOperations()">✕ 關閉</button></div>
+ <section aria-label="白板與班級操作"><div class="nav"><label class="theme-control" for="themeSelect"><span>主題配色</span><select id="themeSelect" aria-label="主題配色" onchange="applyTheme(this.value)"><option value="lavender">紫藤</option><option value="sky">晴空</option><option value="mint">薄荷</option><option value="amber">暖杏</option><option value="rose">櫻花</option><option value="slate">岩灰</option></select></label><span id="appModeStatus" class="status">● 本機模式｜JSON 備份</span><button class="btn active" id="boardNav" onclick="showMode('board')">▣ 電子白板</button><button class="btn" id="adminNav" onclick="showMode('admin')">⚙ 後台管理</button><div class="class-file-actions"><span id="autosaveLabel" class="status" title="自動存至此裝置此瀏覽器">✓ 已自動儲存</span><button class="btn" onclick="exportClassVersion()" title="下載目前班級資料檔">💾 儲存本班版本</button><label class="btn class-file-picker">📂 載入班級版本<input type="file" accept=".json,application/json" class="visually-hidden" onchange="importClassVersion(event)"></label></div><button class="btn ghost" onclick="toggleFull()">⛶ 全螢幕</button></div></section>
+ <section aria-label="日期與班級"><h3>日期與班級</h3><div class="selector-row"><label for="viewDate">考試日期</label><select id="viewDate" onchange="changeSelection()"></select><label for="viewGrade">年段</label><select id="viewGrade" onchange="changeSelection()"><option>高一</option><option>高二</option><option>高三</option></select><label for="viewRoom">教室</label><select id="viewRoom" onchange="changeRoom()"></select><span class="modehint">資訊會依日期與年段切換 · 投影適用</span></div></section>
+ <section aria-label="白板排版"><h3>白板排版</h3><div class="layout-toolbar"><div class="layout-caption">🌈 繽紛教室看板 <span>編輯模式：拖曳標題換位置、拉右下角改大小；其他方格大小不變，僅重新排列</span></div><button class="btn" id="layoutEditBtn" onclick="toggleLayoutEdit()">✋ 編輯方格位置／大小</button><button class="btn ghost" onclick="resetLayout()">↺ 還原排版</button></div></section>
+</dialog>
 <div id="boardView">
 <div class="study-mascots" aria-hidden="true"><img src="assets/boy.webp" alt=""><img src="assets/girl.webp" alt=""></div>
 <section class="board-head"><div class="heading-main"><div><div class="eyebrow">EXAMINATION SCHEDULE</div><h1 id="schoolTitle">115 學年度・第 2 次定期評量</h1><div class="subtitle" id="roomTitle">八年級</div></div><span class="classroom-tag" id="classroomTag">🏫 知足班</span></div></section>
-<div class="selector-row"><label for="viewDate">考試日期</label><select id="viewDate" onchange="changeSelection()"></select><label for="viewGrade">年段</label><select id="viewGrade" onchange="changeSelection()"><option>高一</option><option>高二</option><option>高三</option></select><label for="viewRoom">教室</label><select id="viewRoom" onchange="changeRoom()"></select><span class="modehint">資訊會依日期與年段切換 · 投影適用</span></div>
+
 <div class="top-alert" id="alert"></div>
-<div class="layout-toolbar"><div class="layout-caption">🌈 繽紛教室看板 <span>編輯模式：拖曳標題換位置、拉右下角改大小；其他方格大小不變，僅重新排列</span></div><button class="btn" id="layoutEditBtn" onclick="toggleLayoutEdit()">✋ 編輯方格位置／大小</button><button class="btn ghost" onclick="resetLayout()">↺ 還原排版</button></div><div class="board-grid"><section class="panel layout-card" data-card="exam" draggable="false" id="cardExam"><div class="panel-head"><h2>📖 目前考試資訊</h2><small id="phaseText">依目前時間自動顯示</small></div><div class="card-scroll"><div class="exam-now"><div class="exam-now-label">🕒 現在時間</div><div class="clock" id="liveClock">08:30:00</div><div class="date-line" id="liveDate">2026/11/17 星期二</div></div><div class="main-exam"><span class="exam-chip" id="examChip">今日考程</span><div class="exam-subject" id="mainSubject">國文</div><div class="exam-time" id="mainTime">08:20 — 09:30</div><div class="exam-extra" id="examExtra">請依監考教師指示應試</div></div><div class="countdown"><span class="label" id="countLabel">距離結束</span><span class="num" id="countValue">00:00:00</span></div></div><button aria-label="調整exam方格的寬度與高度" class="resize-grip" data-resize="exam" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="schedule" draggable="false" id="cardSchedule"><div class="panel-head"><h2>🗓 當日考試時程</h2><small id="scheduleCaption"></small></div><div class="schedule" id="scheduleList"></div><button aria-label="調整schedule方格的寬度與高度" class="resize-grip" data-resize="schedule" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="seat" draggable="false" id="cardSeat"><div class="panel-head"><h2>🪑 考試座位配置</h2><small id="seatCaption">由講台往後看</small></div><div class="seat-wrap"><div class="seat-meta"><span>前方／黑板</span><span id="seatMeta"></span></div><div class="teacher">講　台</div><div class="seats" id="seatGrid"></div><div class="seat-status-help" id="seatStatusHint"></div></div><button aria-label="調整seat方格的寬度與高度" class="resize-grip" data-resize="seat" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="notice" draggable="false" id="cardNotice"><div class="panel-head"><h2>📌 考試注意事項</h2><small>請同學遵守</small></div><div class="notice-list" id="noticeList"></div><button aria-label="調整notice方格的寬度與高度" class="resize-grip" data-resize="notice" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="attendance" draggable="false" id="cardAttendance"><div class="panel-head"><h2>🙋 今日應考人數</h2><small>依日期・年段・教室</small></div><div class="card-scroll"><div class="attendance-display"><div class="att-stat"><span>應到</span><b id="expectedDisplay">30</b><em>人</em></div><div class="att-stat present"><span>實到</span><b id="actualDisplay">29</b><em>人</em></div><div class="att-stat absent"><span>未到</span><b id="absentDisplay">1</b><em>人</em></div></div><div class="absence-note" id="absenceNoteDisplay">缺席備註：尚未填寫</div></div><button aria-label="調整出缺席方格的寬度與高度" class="resize-grip" data-resize="attendance" title="拖曳此處調整方格大小" type="button">↘</button></section></div>
+<div class="board-grid"><section class="panel layout-card" data-card="exam" draggable="false" id="cardExam"><div class="panel-head"><h2>📖 目前考試資訊</h2><small id="phaseText">依目前時間自動顯示</small></div><div class="card-scroll"><div class="exam-now"><div class="exam-now-label">🕒 現在時間</div><div class="clock" id="liveClock">08:30:00</div><div class="date-line" id="liveDate">2026/11/17 星期二</div></div><div class="main-exam"><span class="exam-chip" id="examChip">今日考程</span><div class="exam-subject" id="mainSubject">國文</div><div class="exam-time" id="mainTime">08:20 — 09:30</div><div class="exam-extra" id="examExtra">請依監考教師指示應試</div></div><div class="countdown"><span class="label" id="countLabel">距離結束</span><span class="num" id="countValue">00:00:00</span></div></div><button aria-label="調整exam方格的寬度與高度" class="resize-grip" data-resize="exam" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="schedule" draggable="false" id="cardSchedule"><div class="panel-head"><h2>🗓 當日考試時程</h2><small id="scheduleCaption"></small></div><div class="schedule" id="scheduleList"></div><button aria-label="調整schedule方格的寬度與高度" class="resize-grip" data-resize="schedule" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="seat" draggable="false" id="cardSeat"><div class="panel-head"><h2>🪑 考試座位配置</h2><small id="seatCaption">由講台往後看</small></div><div class="seat-wrap"><div class="seat-meta"><span>前方／黑板</span><span id="seatMeta"></span></div><div class="teacher">講　台</div><div class="seats" id="seatGrid"></div><div class="seat-status-help" id="seatStatusHint"></div></div><button aria-label="調整seat方格的寬度與高度" class="resize-grip" data-resize="seat" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="notice" draggable="false" id="cardNotice"><div class="panel-head"><h2>📌 考試注意事項</h2><small>請同學遵守</small></div><div class="notice-list" id="noticeList"></div><button aria-label="調整notice方格的寬度與高度" class="resize-grip" data-resize="notice" title="拖曳此處調整方格大小" type="button">↘</button></section><section class="panel layout-card" data-card="attendance" draggable="false" id="cardAttendance"><div class="panel-head"><h2>🙋 今日應考人數</h2><small>依日期・年段・教室</small></div><div class="card-scroll"><div class="attendance-display"><div class="att-stat"><span>應到</span><b id="expectedDisplay">30</b><em>人</em></div><div class="att-stat present"><span>實到</span><b id="actualDisplay">29</b><em>人</em></div><div class="att-stat absent"><span>未到</span><b id="absentDisplay">1</b><em>人</em></div></div><div class="absence-note" id="absenceNoteDisplay">缺席備註：尚未填寫</div></div><button aria-label="調整出缺席方格的寬度與高度" class="resize-grip" data-resize="attendance" title="拖曳此處調整方格大小" type="button">↘</button></section></div>
 </div>
 <div class="hidden" id="adminView"><div class="admin-layout"><aside class="admin-tabs"><button class="btn active" id="tabSchedule" onclick="openTab('schedule')">📅 考程管理</button><button class="btn" id="tabSeat" onclick="openTab('seat')">🪑 班級座位安排</button><button class="btn" id="tabNotice" onclick="openTab('notice')">📌 注意事項</button><button class="btn" id="tabAttendance" onclick="openTab('attendance')">🙋 出缺席登記</button><button class="btn" id="tabLayout" onclick="openTab('layout')">🎨 白板外觀</button><button class="btn" id="tabImport" onclick="openTab('import')">📥 匯入檔案</button><button class="btn" id="tabSettings" onclick="openTab('settings')">⚙ 基本設定</button></aside><main class="panel admin-content">
 <section id="paneSchedule"><h2>考程管理</h2><p class="help">按照日期、年段編輯考試科目與起迄時間。修改後立即更新白板，並自動保存在目前瀏覽器。</p><div class="fields"><div class="field"><label>日期</label><input id="editDate" onchange="renderAdminSchedule()" type="date"/></div><div class="field"><label>年段</label><select id="editGrade" onchange="renderAdminSchedule()"><option>七年級</option><option>八年級</option><option>九年級</option><option>高一</option><option>高二</option><option>高三</option></select></div><div class="field"><label>快捷操作</label><button class="btn" onclick="copyPreviousDay()">複製上一考試日考程</button></div></div><div class="actions"><button class="btn primary" onclick="addExam()">＋ 新增考試</button><button class="btn" onclick="saveExams()">儲存本日考程</button><button class="btn red" onclick="clearDay()">清除此日考程</button></div><div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>開始</th><th>結束</th><th>科目</th><th>備註</th><th>操作</th></tr></thead><tbody id="examEditor"></tbody></table></div></section>
@@ -1115,6 +1156,19 @@ document.addEventListener('fullscreenchange',()=>{
 });
 fitWhiteboard();
 
+
+/* Controls live outside the board so they do not consume projection space. */
+function openOperations(){const dialog=$('operationsDialog');if(!dialog.open)dialog.showModal();$('operationsToggle').setAttribute('aria-expanded','true')}
+function closeOperations(){const dialog=$('operationsDialog');if(dialog.open)dialog.close()}
+$('operationsDialog').addEventListener('close',()=>{$('operationsToggle').setAttribute('aria-expanded','false')});
+$('operationsDialog').addEventListener('click',event=>{
+ if(event.target!==event.currentTarget)return;
+ const bounds=event.currentTarget.getBoundingClientRect();
+ if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)closeOperations();
+});
+for(const id of ['boardNav','adminNav','layoutEditBtn'])$(id).addEventListener('click',closeOperations);
+$('operationsDialog').querySelector('[onclick="toggleFull()"]').addEventListener('click',closeOperations);
+
 /* V1.16 adapter: keeps each class isolated when syncing authorized data. */
 const cloudCachedRooms=new Map();
 window.EXAM_APP={
@@ -1216,7 +1270,7 @@ window.EXAM_APP={
    if(finished)return;
    finished=true;
    const script=document.createElement('script');
-   script.src='cloud/runtime.js?v=20261124-mobile2';
+   script.src='cloud/runtime.js?v=20261124-controls1';
    script.onerror=()=>notice('無法載入雲端登入程式，可能是行動網路或瀏覽器限制。');
    document.body.appendChild(script);
  }
