@@ -1197,6 +1197,48 @@ window.EXAM_APP={
  }
 };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cloud/runtime.js?v=20261124-mobile2"></script>
+<script>
+/* Mobile-friendly cloud boot: two CDNs, explicit error and a working local fallback. */
+(function(){
+ const startup=document.getElementById('cloudStartup');
+ const notice=msg=>{
+   if(startup)startup.innerHTML='<strong>雲端登入暫時無法載入</strong><p>'+msg+'</p>'+
+    '<p><a href="?cloud=local">進入本機備用版（不會同步）</a></p>'+
+    '<p><a href="?cloud=retry">重新載入雲端登入</a></p>';
+ };
+ if(!window.EXAM_CLOUD_ACTIVE){return;}
+ let finished=false;
+ const sources=[
+   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+   'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js'
+ ];
+ function startRuntime(){
+   if(finished)return;
+   finished=true;
+   const script=document.createElement('script');
+   script.src='cloud/runtime.js?v=20261124-mobile2';
+   script.onerror=()=>notice('無法載入雲端登入程式，可能是行動網路或瀏覽器限制。');
+   document.body.appendChild(script);
+ }
+ function loadSource(index){
+   if(window.supabase?.createClient){startRuntime();return;}
+   if(index>=sources.length){notice('無法取得 Supabase 登入服務，請切換網路或從系統瀏覽器開啟。');return;}
+   const script=document.createElement('script');
+   script.src=sources[index];script.async=true;
+   let resolved=false;
+   const timer=setTimeout(()=>{
+     if(resolved)return;resolved=true;script.remove();loadSource(index+1);
+   },7000);
+   script.onload=()=>{
+     if(resolved)return;resolved=true;clearTimeout(timer);
+     if(window.supabase?.createClient)startRuntime();else loadSource(index+1);
+   };
+   script.onerror=()=>{
+     if(resolved)return;resolved=true;clearTimeout(timer);loadSource(index+1);
+   };
+   document.body.appendChild(script);
+ }
+ loadSource(0);
+})();
+</script>
 </body></html>
