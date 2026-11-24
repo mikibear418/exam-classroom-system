@@ -213,6 +213,14 @@
     if(!confirm('確定要將「'+room+'」的本機設定與名冊首次上傳到雲端嗎？請先確認沒有真實學生資料外洩風險。'))return;
     pending.set(room,app.serializeRoom(room));dirty.add(room);await savePending(room);
   });
-  db.auth.onAuthStateChange((event,session)=>{if(['INITIAL_SESSION','SIGNED_IN','SIGNED_OUT'].includes(event))setTimeout(()=>{void activate(session)},0);});
-  void db.auth.getSession().then(({data})=>activate(data.session)).catch(e=>gate(true,e.message));
+  // INITIAL_SESSION already delivers the current session. A second getSession()
+  // raced with it and could recreate the editor on mobile on every refresh.
+  let authActivation=null;
+  db.auth.onAuthStateChange((event,session)=>{
+    if(!['INITIAL_SESSION','SIGNED_IN','SIGNED_OUT'].includes(event))return;
+    const key=(session?.user?.id||'signed-out')+':'+(session?.access_token||'');
+    if(event!=='SIGNED_OUT' && authActivation===key)return;
+    authActivation=key;
+    setTimeout(()=>{void activate(session)},0);
+  });
 })();
